@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+#include <QDebug>
+
 
 cMonthlyView::cMonthlyView(const QDate& date, QWidget *parent) :
 	QWidget(parent),
@@ -18,9 +20,13 @@ cMonthlyView::cMonthlyView(const QDate& date, QWidget *parent) :
 
 	m_lpMonthlyListModel	= new QStandardItemModel(0, 1);
 	ui->m_lpMonthlyList->setModel(m_lpMonthlyListModel);
+
 	ui->m_lpMonthlyList->setItemDelegate(new cMonthlyItemDelegate(m_code));
 
 	setDate(date);
+
+	connect(static_cast<cMonthlyItemDelegate*>(ui->m_lpMonthlyList->itemDelegate()),	&cMonthlyItemDelegate::timeChanged,	this,	&cMonthlyView::onTimeChanged);
+	connect(static_cast<cMonthlyItemDelegate*>(ui->m_lpMonthlyList->itemDelegate()),	&cMonthlyItemDelegate::textChanged,	this,	&cMonthlyView::onTextChanged);
 }
 
 void cMonthlyView::setDate(const QDate& date)
@@ -115,4 +121,18 @@ void cMonthlyView::setDate(const QDate& date)
 cMonthlyView::~cMonthlyView()
 {
 	delete ui;
+}
+
+void cMonthlyView::onTimeChanged(const int day, const int field, const QTime& time)
+{
+	qDebug() << "Day: " << day;
+	qDebug() << "field: " << field;
+	qDebug() << "time: " << time;
+}
+
+void cMonthlyView::onTextChanged(const int day, const int field, const QString& text)
+{
+	qDebug() << "Day: " << day;
+	qDebug() << "field: " << field;
+	qDebug() << "time: " << text;
 }

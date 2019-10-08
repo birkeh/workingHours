@@ -22,6 +22,8 @@ public:
 	virtual void			setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
 signals:
+	void					timeChanged(const int day, const int field, const QTime& time) const;
+	void					textChanged(const int day, const int field, const QString& text) const;
 
 private:
 	QMap<QString, QString>	m_code;

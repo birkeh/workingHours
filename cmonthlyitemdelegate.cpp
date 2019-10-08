@@ -97,16 +97,25 @@ void cMonthlyItemDelegate::setModelData ( QWidget *editor, QAbstractItemModel *m
 			model->setData(index, "", Qt::EditRole);
 		else
 			model->setData(index, lpTimeEdit->time().toString(), Qt::EditRole);
+
+		emit timeChanged(index.row()+1, index.column(), lpTimeEdit->time());
+
 		break;
 	}
 	case COL_CODE:
 	{
 		QComboBox*	lpComboBox	= qobject_cast<QComboBox*>(editor);
 		model->setData(index, m_code.key(lpComboBox->currentText()), Qt::EditRole);
+
+		emit textChanged(index.row()+1, index.column(), lpComboBox->currentText());
+
 		break;
 	}
 	case COL_INFORMATION:
 		QStyledItemDelegate::setModelData(editor, model, index);
+
+		emit textChanged(index.row()+1, index.column(), model->data(index, Qt::EditRole).toString());
+
 		break;
 	default:
 		break;
