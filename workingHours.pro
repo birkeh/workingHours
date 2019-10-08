@@ -25,14 +25,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        cmonthlyitemdelegate.cpp \
+        cmonthlyview.cpp \
+        cpublicholiday.cpp \
         main.cpp \
         cmainwindow.cpp
 
 HEADERS += \
-        cmainwindow.h
+        cmainwindow.h \
+        cmonthlyitemdelegate.h \
+        cmonthlyview.h \
+        common.h \
+        cpublicholiday.h
 
 FORMS += \
-        cmainwindow.ui
+        cmainwindow.ui \
+        cmonthlyview.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -2,7 +2,10 @@
 #define CMAINWINDOW_H
 
 
+#include "cmonthlyview.h"
+
 #include <QMainWindow>
+#include <QCloseEvent>
 
 
 namespace Ui {
@@ -18,7 +21,11 @@ public:
 	~cMainWindow();
 
 private:
-	Ui::cMainWindow *ui;
+	Ui::cMainWindow*	ui;
+	cMonthlyView*		m_lpMonthlyView;
+
+protected:
+	void				closeEvent(QCloseEvent* event);
 };
 
 #endif // CMAINWINDOW_H
