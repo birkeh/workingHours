@@ -23,6 +23,15 @@ cMonthlyView::cMonthlyView(const QDate& date, QWidget *parent) :
 
 	ui->m_lpMonthlyList->setItemDelegate(new cMonthlyItemDelegate(m_code));
 
+	ui->m_lpGleitzeitLabel->setAutoFillBackground(true);
+	ui->m_lpGleitzeitLabel->setStyleSheet(QString("QLabel { background-color: rgba(%1, %2, %3, 255); }").arg(COLOR_GLEITZEIT.red()).arg(COLOR_GLEITZEIT.green()).arg(COLOR_GLEITZEIT.blue()));
+	ui->m_lpKrankLabel->setAutoFillBackground(true);
+	ui->m_lpKrankLabel->setStyleSheet(QString("QLabel { background-color: rgba(%1, %2, %3, 255); }").arg(COLOR_KRANK.red()).arg(COLOR_KRANK.green()).arg(COLOR_KRANK.blue()));
+	ui->m_lpUrlaubLabel->setAutoFillBackground(true);
+	ui->m_lpUrlaubLabel->setStyleSheet(QString("QLabel { background-color: rgba(%1, %2, %3, 255); }").arg(COLOR_URLAUB.red()).arg(COLOR_URLAUB.green()).arg(COLOR_URLAUB.blue()));
+	ui->m_lpSonderurlaubLabel->setAutoFillBackground(true);
+	ui->m_lpSonderurlaubLabel->setStyleSheet(QString("QLabel { background-color: rgba(%1, %2, %3, 255); }").arg(COLOR_SONDERURLAUB.red()).arg(COLOR_SONDERURLAUB.green()).arg(COLOR_SONDERURLAUB.blue()));
+
 	setDate(date);
 
 	connect(static_cast<cMonthlyItemDelegate*>(ui->m_lpMonthlyList->itemDelegate()),	&cMonthlyItemDelegate::timeChanged,	this,	&cMonthlyView::onTimeChanged);
@@ -53,9 +62,9 @@ void cMonthlyView::setDate(const QDate& date)
 	items[COL_CODE]->setText("");
 	items[COL_IS]->setText("00:00:00");
 	items[COL_SHOULD]->setText("00:00:00");
-	items[COL_DIFF]->setText("00:00:00");
+	items[COL_DIFF]->setText("+00:00:00");
 	items[COL_INFORMATION]->setText("");
-	items[COL_CURRENT]->setText("00:00:00");
+	items[COL_CURRENT]->setText("+00:00:00");
 	items[COL_HOURS_DEC]->setText("0.0");
 	items[COL_DAY2]->setText("99");
 
@@ -66,6 +75,7 @@ void cMonthlyView::setDate(const QDate& date)
 
 	m_lpMonthlyListModel->removeRows(0, 1);
 
+	QBrush	weekend	= QBrush(COLOR_WEEKEND);
 	QDate	date1	= date;
 	date1.setDate(date.year(), date.month(), 1);
 
@@ -112,10 +122,27 @@ void cMonthlyView::setDate(const QDate& date)
 		items[COL_HOURS_DEC]->setTextAlignment(Qt::AlignRight);
 		items[COL_DAY2]->setTextAlignment(Qt::AlignLeft);
 
+		for(int z = 0;z < items.count();z++)
+		{
+			if(date1.dayOfWeek() >= 6)
+			{
+				items[z]->setData(QVariant::fromValue(true), Qt::UserRole+1);
+				items[z]->setBackground(weekend);
+			}
+			else
+				items[z]->setData(QVariant::fromValue(false), Qt::UserRole+1);
+		}
+
 		m_lpMonthlyListModel->appendRow(items);
 	}
 	ui->m_lpMonthlyList->resizeColumnToContents(COL_DAY1);
 	ui->m_lpMonthlyList->resizeColumnToContents(COL_DAY2);
+
+	ui->m_lpUebertragLabel->setText(QString(tr("Übertrag %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
+	ui->m_lpShouldLabel->setText(QString(tr("SOLL Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
+	ui->m_lpIsLabel->setText(QString(tr("IST Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
+	ui->m_lpResturlaubLabel->setText(QString(tr("Resturlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
+	ui->m_lpRestSonderurlaubLabel->setText(QString(tr("Sonderurlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
 }
 
 cMonthlyView::~cMonthlyView()
@@ -135,4 +162,25 @@ void cMonthlyView::onTextChanged(const int day, const int field, const QString& 
 	qDebug() << "Day: " << day;
 	qDebug() << "field: " << field;
 	qDebug() << "time: " << text;
+
+	if(field == COL_CODE)
+	{
+		QBrush	brush;
+		QString	code	= m_code.key(text);
+
+		if(code == "G")
+			brush	= QBrush(COLOR_GLEITZEIT);
+		else if(code == "U")
+			brush	= QBrush(COLOR_URLAUB);
+		else if(code == "K")
+			brush	= QBrush(COLOR_KRANK);
+		else if(code == "SU")
+			brush	= QBrush(COLOR_SONDERURLAUB);
+
+		for(int x = 0;x < m_lpMonthlyListModel->columnCount();x++)
+		{
+			QStandardItem* lpItem	= m_lpMonthlyListModel->item(day-1, x);
+			lpItem->setBackground(brush);
+		}
+	}
 }

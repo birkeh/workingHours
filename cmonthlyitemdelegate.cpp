@@ -30,6 +30,9 @@ QWidget* cMonthlyItemDelegate::createEditor( QWidget *parent, const QStyleOption
 	}
 	case COL_CODE:
 	{
+		if(index.data(Qt::UserRole+1).toBool())
+			return(nullptr);
+
 		QComboBox*	lpComboBox	= new QComboBox(parent);
 
 		for(QMap<QString, QString>::const_iterator i = m_code.constBegin();i != m_code.constEnd();i++)
@@ -93,7 +96,8 @@ void cMonthlyItemDelegate::setModelData ( QWidget *editor, QAbstractItemModel *m
 		QTimeEdit*	lpTimeEdit	= qobject_cast<QTimeEdit*>(editor);
 		if(!lpTimeEdit->time().hour() &&
 				!lpTimeEdit->time().minute() &&
-				!lpTimeEdit->time().second())
+				!lpTimeEdit->time().second() &&
+				index.column() != COL_BREAK)
 			model->setData(index, "", Qt::EditRole);
 		else
 			model->setData(index, lpTimeEdit->time().toString(), Qt::EditRole);
