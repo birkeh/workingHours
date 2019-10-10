@@ -13,15 +13,19 @@
 #define COL_GO2				5
 #define COL_COME3			6
 #define COL_GO3				7
-#define COL_BREAK			8
-#define COL_CODE			9
-#define COL_IS				10
-#define COL_SHOULD			11
-#define COL_DIFF			12
-#define COL_INFORMATION		13
-#define COL_CURRENT			14
-#define COL_HOURS_DEC		15
-#define COL_DAY2			16
+#define COL_COME4			8
+#define COL_GO4				9
+#define COL_COME5			10
+#define COL_GO5				11
+#define COL_BREAK			12
+#define COL_CODE			13
+#define COL_IS				14
+#define COL_SHOULD			15
+#define COL_DIFF			16
+#define COL_INFORMATION		17
+#define COL_CURRENT			18
+#define COL_HOURS_DEC		19
+#define COL_DAY2			20
 
 #define COLOR_GLEITZEIT		QColor(191, 191, 255)
 #define COLOR_URLAUB		QColor(127, 127, 255)

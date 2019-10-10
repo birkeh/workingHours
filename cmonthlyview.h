@@ -3,6 +3,9 @@
 
 
 #include "cmonthlyitemdelegate.h"
+#include "cpublicholiday.h"
+
+#include "cbooking.h"
 
 #include <QWidget>
 #include <QStandardItemModel>
@@ -19,18 +22,24 @@ class cMonthlyView : public QWidget
 	Q_OBJECT
 
 public:
-	explicit cMonthlyView(const QDate& date, QWidget *parent = nullptr);
+	explicit cMonthlyView(const QDate& date, cBookingList* lpBookingList, QWidget *parent = nullptr);
 	~cMonthlyView();
 
 	void					setDate(const QDate& date);
 private:
 	Ui::cMonthlyView*		ui;
+	bool					m_loading;
 	QStandardItemModel*		m_lpMonthlyListModel;
 	QMap<QString, QString>	m_code;
+	cPublicHoliday			m_publicHoliday;
+	cBookingList*			m_lpBookingList;
+
+	void					setBackground(const int day, const QString& code);
 
 private slots:
 	void					onTimeChanged(const int day, const int field, const QTime& time);
 	void					onTextChanged(const int day, const int field, const QString& text);
+	void					onDateChanged(const QDate& date);
 };
 
 #endif // CMONTHLYVIEW_H

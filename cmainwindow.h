@@ -3,9 +3,12 @@
 
 
 #include "cmonthlyview.h"
+#include "cbooking.h"
 
 #include <QMainWindow>
 #include <QCloseEvent>
+
+#include <QSqlDatabase>
 
 
 namespace Ui {
@@ -23,6 +26,11 @@ public:
 private:
 	Ui::cMainWindow*	ui;
 	cMonthlyView*		m_lpMonthlyView;
+	QSqlDatabase		m_db;
+	cBookingList		m_bookingList;
+
+	void				initUI();
+	void				openDB();
 
 protected:
 	void				closeEvent(QCloseEvent* event);

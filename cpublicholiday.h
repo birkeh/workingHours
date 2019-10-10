@@ -11,28 +11,38 @@
 class cPublicHoliday
 {
 public:
-	cPublicHoliday(qint16 year);
+	cPublicHoliday(qint16 year = 2000);
+
+	void					setYear(qint16 year);
+	qint16					year();
 
 	bool					isPublicHoliday(const QDate& date);
 	QString					name(const QDate& date);
+	QMap<QDate, QString>	list();
 
 private:
 	qint16					m_year;
 	QMap<QDate, QString>	m_holidays;
 
+	void					calculate();
+
 	QDate					neujahr();
-	QDate					heilige3Koenige();
+	QDate					heilige3koenige();
 	QDate					karfreitag();
 	QDate					ostersonntag();
 	QDate					ostermontag();
 	QDate					staatsfeiertag1();
-	QDate					christiHimmelfahrt();
+	QDate					christihimmelfahrt();
 	QDate					pfingstsonntag();
-	QDate					pfingstMontag();
+	QDate					pfingstmontag();
 	QDate					fronleichnam();
-	QDate					mariaHimmelfahrt();
+	QDate					mariahimmelfahrt();
 	QDate					staatsfeiertag();
 	QDate					allerheiligen();
+	QDate					ersteradvent();
+	QDate					mariaempfaengnis();
+	QDate					ersterweihnachtstag();
+	QDate					zweiterweihnachtstag();
 	QDate					silvester();
 };
 /*

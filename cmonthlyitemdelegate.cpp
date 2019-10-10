@@ -22,7 +22,10 @@ QWidget* cMonthlyItemDelegate::createEditor( QWidget *parent, const QStyleOption
 	case COL_GO2:
 	case COL_COME3:
 	case COL_GO3:
-	case COL_BREAK:
+	case COL_COME4:
+	case COL_GO4:
+	case COL_COME5:
+	case COL_GO5:
 	{
 		QTimeEdit*	lpTimeEdit	= new QTimeEdit(parent);
 		lpTimeEdit->setDisplayFormat("HH:mm:ss");
@@ -56,7 +59,10 @@ void cMonthlyItemDelegate::setEditorData ( QWidget *editor, const QModelIndex &i
 	case COL_GO2:
 	case COL_COME3:
 	case COL_GO3:
-	case COL_BREAK:
+	case COL_COME4:
+	case COL_GO4:
+	case COL_COME5:
+	case COL_GO5:
 	{
 		QTimeEdit*	lpTimeEdit	= qobject_cast<QTimeEdit*>(editor);
 		lpTimeEdit->setTime(QTime::fromString(index.data(Qt::EditRole).toString()));
@@ -91,7 +97,10 @@ void cMonthlyItemDelegate::setModelData ( QWidget *editor, QAbstractItemModel *m
 	case COL_GO2:
 	case COL_COME3:
 	case COL_GO3:
-	case COL_BREAK:
+	case COL_COME4:
+	case COL_GO4:
+	case COL_COME5:
+	case COL_GO5:
 	{
 		QTimeEdit*	lpTimeEdit	= qobject_cast<QTimeEdit*>(editor);
 		if(!lpTimeEdit->time().hour() &&

@@ -17,6 +17,16 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
+      <widget class="QDateEdit" name="m_lpMonth">
+       <property name="currentSection">
+        <enum>QDateTimeEdit::MonthSection</enum>
+       </property>
+       <property name="displayFormat">
+        <string>MM.yyyy</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QScrollArea" name="scrollArea">
        <property name="widgetResizable">
         <bool>true</bool>
@@ -27,11 +37,11 @@
           <x>0</x>
           <y>0</y>
           <width>861</width>
-          <height>241</height>
+          <height>215</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="QTreeView" name="m_lpMonthlyList">
            <property name="alternatingRowColors">
             <bool>true</bool>

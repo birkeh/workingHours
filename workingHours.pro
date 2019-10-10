@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        cbooking.cpp \
         cmonthlyitemdelegate.cpp \
         cmonthlyview.cpp \
         cpublicholiday.cpp \
@@ -32,6 +33,7 @@ SOURCES += \
         cmainwindow.cpp
 
 HEADERS += \
+        cbooking.h \
         cmainwindow.h \
         cmonthlyitemdelegate.h \
         cmonthlyview.h \
