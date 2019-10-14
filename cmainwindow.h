@@ -3,6 +3,7 @@
 
 
 #include "cmonthlyview.h"
+#include "cdailyworking.h"
 #include "cbooking.h"
 
 #include <QMainWindow>
@@ -27,6 +28,7 @@ private:
 	Ui::cMainWindow*	ui;
 	cMonthlyView*		m_lpMonthlyView;
 	QSqlDatabase		m_db;
+	cDailyWorkingList	m_dailyWorkingList;
 	cBookingList		m_bookingList;
 
 	void				initUI();

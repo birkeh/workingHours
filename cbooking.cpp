@@ -190,9 +190,9 @@ QTime cBooking::ist()
 	return(QTime(0, 0, 0).addSecs(istSecs()));
 }
 
-void cBooking::setSoll()
+void cBooking::setSoll(const QTime& time)
 {
-	m_soll	= QTime(0, 0, 0);
+	m_soll	= time;
 }
 
 QTime cBooking::soll()
@@ -364,8 +364,9 @@ int cBooking::totalPause()
 	return(geht1().secsTo(kommt2()) + geht2().secsTo(kommt3()) + geht3().secsTo(kommt4()) + geht4().secsTo(kommt5()));
 }
 
-bool cBookingList::load()
+bool cBookingList::load(cDailyWorkingList* lpDailyWorkingList)
 {
+	m_lpDailyWorkingList	= lpDailyWorkingList;
 	QSqlQuery	query;
 
 	query.prepare("SELECT   datum, "
@@ -408,6 +409,10 @@ bool cBookingList::load()
 			lpBooking->setGeht5(query.value("geht5").toTime());
 			lpBooking->setCode(query.value("code").toString());
 			lpBooking->setInformation(query.value("information").toString());
+
+			cDailyWorking*	lpDailyWorking	= m_lpDailyWorkingList->get(lpBooking->date());
+			if(lpDailyWorking)
+				lpBooking->setSoll(lpDailyWorking->soll(lpBooking->date().dayOfWeek()));
 		}
 	}
 

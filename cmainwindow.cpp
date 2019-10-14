@@ -19,7 +19,8 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_lpMonthlyView(nullptr)
 {
 	openDB();
-	m_bookingList.load();
+	m_dailyWorkingList.load();
+	m_bookingList.load(&m_dailyWorkingList);
 
 	initUI();
 
@@ -93,22 +94,34 @@ void cMainWindow::openDB()
 	}
 
 	qDebug() << "Database opened";
+	QSqlQuery	query;
 
-//	if(!m_db.tables().contains("config"))
-//	{
-//		QSqlQuery	query;
-
-//		query.prepare("CREATE TABLE config "
-//					  "             ")
-//	}
+	if(!m_db.tables().contains("dailyWorking"))
+	{
+		query.prepare("CREATE TABLE dailyWorking "
+					  "( "
+					  "     ab          DATE PRIMARY KEY UNIQUE, "
+					  "     montag      TIME, "
+					  "     dienstag    TIME, "
+					  "     mittwoch    TIME, "
+					  "     donnerstag  TIME, "
+					  "     freitag     TIME, "
+					  "     samstag     TIME, "
+					  "     sonntag     TIME "
+					  ");");
+		if(!query.exec())
+		{
+			qDebug() << "CREATE TABLE dailyWorking: " << query.lastError().text();
+			return;
+		}
+		qDebug() << "CREATE TABLE dailyWorking";
+	}
 
 	if(!m_db.tables().contains("booking"))
 	{
-		QSqlQuery	query;
-
 		query.prepare("CREATE TABLE booking "
 					  "( "
-					  "     datum       DATE PRIMARY KEY UNIQE, "
+					  "     datum       DATE PRIMARY KEY UNIQUE, "
 					  "     kommt1      TIME, "
 					  "     geht1       TIME, "
 					  "     kommt2      TIME, "
