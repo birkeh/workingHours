@@ -27,6 +27,9 @@
 #define COL_HOURS_DEC		19
 #define COL_DAY2			20
 
+#define DATA_HOLIDAY		(Qt::UserRole+1)
+#define DATA_BOOKING		(Qt::UserRole+2)
+
 #define COLOR_GLEITZEIT		QColor(191, 191, 255)
 #define COLOR_URLAUB		QColor(127, 127, 255)
 #define COLOR_SONDERURLAUB	QColor(127, 127, 255)

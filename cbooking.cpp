@@ -152,14 +152,42 @@ QString cBooking::information()
 	return(m_information);
 }
 
+qint32 cBooking::pauseSecs()
+{
+	int	w	= totalWork();
+	int	p	= totalPause();
+
+	if(w < 21600)
+		return(0);
+
+	if(p < 1800)
+		return(1800-p);
+
+	return(0);
+}
+
 QTime cBooking::pause()
 {
-	return(QTime(0, 0, 0));
+	return(QTime(0, 0, 0).addSecs(pauseSecs()));
+}
+
+qint32 cBooking::istSecs()
+{
+	int	w	= totalWork();
+	int	p	= totalPause();
+
+	if(w < 21600)
+		return(w);
+
+	if(p < 1800)
+		return(w - (1800-p));
+
+	return(w);
 }
 
 QTime cBooking::ist()
 {
-	return(QTime(0, 0, 0));
+	return(QTime(0, 0, 0).addSecs(istSecs()));
 }
 
 void cBooking::setSoll()
@@ -228,7 +256,9 @@ QString cBooking::currentDiffString()
 
 qreal cBooking::hoursDecimal()
 {
-	return(0);
+	int	w	= istSecs();
+
+	return(static_cast<qreal>(w)/3600);
 }
 
 bool cBooking::save()
@@ -293,16 +323,16 @@ bool cBooking::save()
 					  "                    );");
 
 	query.bindValue(":datum", date());
-	query.bindValue(":kommt1", kommt1());
-	query.bindValue(":geht1", geht1());
-	query.bindValue(":kommt2", kommt2());
-	query.bindValue(":geht2", geht2());
-	query.bindValue(":kommt3", kommt3());
-	query.bindValue(":geht3", geht3());
-	query.bindValue(":kommt4", kommt4());
-	query.bindValue(":geht4", geht4());
-	query.bindValue(":kommt5", kommt5());
-	query.bindValue(":geht5", geht5());
+	bind(query, ":kommt1", kommt1());
+	bind(query, ":geht1", geht1());
+	bind(query, ":kommt2", kommt2());
+	bind(query, ":geht2", geht2());
+	bind(query, ":kommt3", kommt3());
+	bind(query, ":geht3", geht3());
+	bind(query, ":kommt4", kommt4());
+	bind(query, ":geht4", geht4());
+	bind(query, ":kommt5", kommt5());
+	bind(query, ":geht5", geht5());
 	query.bindValue(":code", code());
 	query.bindValue(":information", information());
 
@@ -314,6 +344,24 @@ bool cBooking::save()
 
 	qDebug() << "saved.";
 	return(true);
+}
+
+void cBooking::bind(QSqlQuery& query, const QString& variable, const QTime& time)
+{
+	if(time == QTime(0, 0, 0))
+		query.bindValue(variable, QVariant(QVariant::Time));
+	else
+		query.bindValue(variable, time);
+}
+
+int cBooking::totalWork()
+{
+	return(kommt1().secsTo(geht1()) + kommt2().secsTo(geht2()) + kommt3().secsTo(geht3()) + kommt4().secsTo(geht4()) + kommt5().secsTo(geht5()));
+}
+
+int cBooking::totalPause()
+{
+	return(geht1().secsTo(kommt2()) + geht2().secsTo(kommt3()) + geht3().secsTo(kommt4()) + geht4().secsTo(kommt5()));
 }
 
 bool cBookingList::load()

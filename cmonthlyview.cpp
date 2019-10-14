@@ -111,16 +111,17 @@ void cMonthlyView::setDate(const QDate& date)
 		items[COL_PUBLIC_HOLIDAY]->setText(m_publicHoliday.name(date1));
 		items[COL_DAY2]->setText(date1.toString("dd dddd"));
 
-		items[COL_COME1]->setText(lpBooking->kommt1().toString("hh:mm:ss"));
-		items[COL_GO1]->setText(lpBooking->geht1().toString("hh:mm:ss"));
-		items[COL_COME2]->setText(lpBooking->kommt2().toString("hh:mm:ss"));
-		items[COL_GO2]->setText(lpBooking->geht2().toString("hh:mm:ss"));
-		items[COL_COME3]->setText(lpBooking->kommt3().toString("hh:mm:ss"));
-		items[COL_GO3]->setText(lpBooking->geht3().toString("hh:mm:ss"));
-		items[COL_COME4]->setText(lpBooking->kommt4().toString("hh:mm:ss"));
-		items[COL_GO4]->setText(lpBooking->geht4().toString("hh:mm:ss"));
-		items[COL_COME5]->setText(lpBooking->kommt5().toString("hh:mm:ss"));
-		items[COL_GO5]->setText(lpBooking->geht5().toString("hh:mm:ss"));
+		setText(items[COL_COME1], lpBooking->kommt1());
+		setText(items[COL_COME1], lpBooking->kommt1());
+		setText(items[COL_GO1], lpBooking->geht1());
+		setText(items[COL_COME2], lpBooking->kommt2());
+		setText(items[COL_GO2], lpBooking->geht2());
+		setText(items[COL_COME3], lpBooking->kommt3());
+		setText(items[COL_GO3], lpBooking->geht3());
+		setText(items[COL_COME4], lpBooking->kommt4());
+		setText(items[COL_GO4], lpBooking->geht4());
+		setText(items[COL_COME5], lpBooking->kommt5());
+		setText(items[COL_GO5], lpBooking->geht5());
 		items[COL_BREAK]->setText(lpBooking->pause().toString("hh:mm:ss"));
 		items[COL_CODE]->setText(lpBooking->code());
 		items[COL_IS]->setText(lpBooking->ist().toString("hh:mm:ss"));
@@ -128,7 +129,7 @@ void cMonthlyView::setDate(const QDate& date)
 		items[COL_DIFF]->setText(lpBooking->diffString());
 		items[COL_INFORMATION]->setText(lpBooking->information());
 		items[COL_CURRENT]->setText(lpBooking->currentDiffString());
-		items[COL_HOURS_DEC]->setText(QString::number(lpBooking->hoursDecimal()));
+		items[COL_HOURS_DEC]->setText(QString::number(lpBooking->hoursDecimal(), 'f', 2));
 
 		items[COL_DAY1]->setTextAlignment(Qt::AlignRight);
 		items[COL_PUBLIC_HOLIDAY]->setTextAlignment(Qt::AlignHCenter);
@@ -156,13 +157,13 @@ void cMonthlyView::setDate(const QDate& date)
 		{
 			if(date1.dayOfWeek() >= 6 || m_publicHoliday.isPublicHoliday(date1))
 			{
-				items[z]->setData(QVariant::fromValue(true), Qt::UserRole+1);
+				items[z]->setData(QVariant::fromValue(true), DATA_HOLIDAY);
 				items[z]->setBackground(weekend);
 			}
 			else
-				items[z]->setData(QVariant::fromValue(false), Qt::UserRole+1);
+				items[z]->setData(QVariant::fromValue(false), DATA_HOLIDAY);
 
-			items[z]->setData(QVariant::fromValue(lpBooking), Qt::UserRole+2);
+			items[z]->setData(QVariant::fromValue(lpBooking), DATA_BOOKING);
 		}
 
 		m_lpMonthlyListModel->appendRow(items);
@@ -194,7 +195,7 @@ void cMonthlyView::onTimeChanged(const int day, const int field, const QTime& ti
 	if(!lpItem)
 		return;
 
-	cBooking*		lpBooking	= lpItem->data(Qt::UserRole+2).value<cBooking*>();
+	cBooking*		lpBooking	= lpItem->data(DATA_BOOKING).value<cBooking*>();
 	if(!lpBooking)
 		return;
 
@@ -203,42 +204,52 @@ void cMonthlyView::onTimeChanged(const int day, const int field, const QTime& ti
 	case COL_COME1:
 		lpBooking->setKommt1(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_GO1:
 		lpBooking->setGeht1(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_COME2:
 		lpBooking->setKommt2(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_GO2:
 		lpBooking->setGeht2(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_COME3:
 		lpBooking->setKommt3(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_GO3:
 		lpBooking->setGeht3(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_COME4:
 		lpBooking->setKommt4(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_GO4:
 		lpBooking->setGeht4(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_COME5:
 		lpBooking->setKommt5(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	case COL_GO5:
 		lpBooking->setGeht5(time);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	}
 }
@@ -249,7 +260,7 @@ void cMonthlyView::onTextChanged(const int day, const int field, const QString& 
 	if(!lpItem)
 		return;
 
-	cBooking*		lpBooking	= lpItem->data(Qt::UserRole+2).value<cBooking*>();
+	cBooking*		lpBooking	= lpItem->data(DATA_BOOKING).value<cBooking*>();
 	if(!lpBooking)
 		return;
 
@@ -294,4 +305,25 @@ void cMonthlyView::setBackground(const int day, const QString& code)
 		QStandardItem* lpItem	= m_lpMonthlyListModel->item(day-1, x);
 		lpItem->setBackground(brush);
 	}
+}
+
+void cMonthlyView::setText(QStandardItem* lpItem, const QTime& time)
+{
+	if(time == QTime(0, 0, 0))
+		lpItem->setText("");
+	else
+		lpItem->setText(time.toString("hh:mm:ss"));
+}
+
+void cMonthlyView::recalculate(int day, int /*field*/)
+{
+	QStandardItem*	lpPauseItem	= m_lpMonthlyListModel->item(day-1, COL_BREAK);
+	QStandardItem*	lpIstItem	= m_lpMonthlyListModel->item(day-1, COL_IS);
+	QStandardItem*	lpDecItem	= m_lpMonthlyListModel->item(day-1, COL_HOURS_DEC);
+
+	cBooking*		lpBooking	= lpPauseItem->data(DATA_BOOKING).value<cBooking*>();
+
+	lpPauseItem->setText(lpBooking->pause().toString("hh:mm:ss"));
+	lpIstItem->setText(lpBooking->ist().toString("hh:mm:ss"));
+	lpDecItem->setText(QString::number(lpBooking->hoursDecimal(), 'f', 2));
 }

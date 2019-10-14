@@ -8,6 +8,8 @@
 #include <QDate>
 #include <QTime>
 
+#include <QSqlQuery>
+
 
 class cBooking : public QObject
 {
@@ -54,8 +56,10 @@ public:
 	void		setInformation(const QString& information);
 	QString		information();
 
+	qint32		pauseSecs();
 	QTime		pause();
 
+	qint32		istSecs();
 	QTime		ist();
 
 	void		setSoll();
@@ -89,6 +93,11 @@ private:
 	QString		m_information;
 	QTime		m_soll;
 	qint32		m_prevDiff;
+
+	void		bind(QSqlQuery& query, const QString& variable, const QTime& time);
+
+	int			totalWork();
+	int			totalPause();
 };
 
 Q_DECLARE_METATYPE(cBooking*)

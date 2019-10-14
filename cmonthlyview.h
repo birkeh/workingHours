@@ -35,6 +35,9 @@ private:
 	cBookingList*			m_lpBookingList;
 
 	void					setBackground(const int day, const QString& code);
+	void					setText(QStandardItem* lpItem, const QTime& time);
+
+	void					recalculate(int day, int field);
 
 private slots:
 	void					onTimeChanged(const int day, const int field, const QTime& time);
