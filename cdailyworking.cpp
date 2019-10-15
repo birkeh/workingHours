@@ -121,8 +121,8 @@ bool cDailyWorkingList::load()
 {
 	QSqlQuery	query;
 
-	query.prepare("SELECT	datum, "
-				  "         montag,"
+	query.prepare("SELECT	ab, "
+				  "         montag, "
 				  "         dienstag, "
 				  "         mittwoch, "
 				  "         donnerstag, "
@@ -130,7 +130,7 @@ bool cDailyWorkingList::load()
 				  "         samstag, "
 				  "         sonntag "
 				  "FROM     dailyWorking "
-				  "ORDER BY datum;");
+				  "ORDER BY ab;");
 
 	if(!query.exec())
 	{
@@ -140,7 +140,7 @@ bool cDailyWorkingList::load()
 
 	while(query.next())
 	{
-		cDailyWorking*	lpWorking	= add(query.value("datum").toDate());
+		cDailyWorking*	lpWorking	= add(query.value("ab").toDate());
 
 		if(lpWorking)
 		{

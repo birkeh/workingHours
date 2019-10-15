@@ -16,19 +16,25 @@
 cMainWindow::cMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::cMainWindow),
-	m_lpMonthlyView(nullptr)
+	m_lpMonthlyView(nullptr),
+	m_lpBookingList(nullptr)
 {
 	openDB();
 	m_dailyWorkingList.load();
-	m_bookingList.load(&m_dailyWorkingList);
+
+	m_lpBookingList	= new cBookingList(&m_publicHoliday, &m_dailyWorkingList);
+	m_lpBookingList->load();
 
 	initUI();
 
-	qDebug() << "count: " << m_bookingList.count();
+	qDebug() << "count: " << m_lpBookingList->count();
 }
 
 cMainWindow::~cMainWindow()
 {
+	if(m_lpBookingList)
+		delete m_lpBookingList;
+
 	if(m_db.isOpen())
 		m_db.close();
 
@@ -68,7 +74,7 @@ void cMainWindow::initUI()
 	if(iX != -1 && iY != -1)
 		move(iX, iY);
 
-	m_lpMonthlyView	= new cMonthlyView(QDate::currentDate(), &m_bookingList, this);
+	m_lpMonthlyView	= new cMonthlyView(QDate::currentDate(), &m_publicHoliday, m_lpBookingList, this);
 	ui->m_lpMainTab->addTab(m_lpMonthlyView, "Monthly");
 }
 

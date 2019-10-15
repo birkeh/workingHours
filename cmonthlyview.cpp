@@ -6,10 +6,11 @@
 #include <QDebug>
 
 
-cMonthlyView::cMonthlyView(const QDate& date, cBookingList* lpBookingList, QWidget *parent) :
+cMonthlyView::cMonthlyView(const QDate& date, cPublicHoliday *lpPublicHoliday, cBookingList* lpBookingList, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::cMonthlyView),
 	m_loading(true),
+	m_lpPublicHoliday(lpPublicHoliday),
 	m_lpBookingList(lpBookingList)
 {
 	m_code.insert(" ", tr(""));
@@ -47,7 +48,7 @@ void cMonthlyView::setDate(const QDate& date)
 {
 	m_loading	= true;
 
-	m_publicHoliday.setYear(static_cast<qint16>(date.year()));
+	m_lpPublicHoliday->setYear(static_cast<qint16>(date.year()));
 
 	m_lpMonthlyListModel->clear();
 
@@ -108,7 +109,7 @@ void cMonthlyView::setDate(const QDate& date)
 			items.append(new QStandardItem);
 
 		items[COL_DAY1]->setText(date1.toString("dddd dd"));
-		items[COL_PUBLIC_HOLIDAY]->setText(m_publicHoliday.name(date1));
+		items[COL_PUBLIC_HOLIDAY]->setText(m_lpPublicHoliday->name(date1));
 		items[COL_DAY2]->setText(date1.toString("dd dddd"));
 
 		setText(items[COL_COME1], lpBooking->kommt1());
@@ -155,7 +156,7 @@ void cMonthlyView::setDate(const QDate& date)
 
 		for(int z = 0;z < items.count();z++)
 		{
-			if(date1.dayOfWeek() >= 6 || m_publicHoliday.isPublicHoliday(date1))
+			if(date1.dayOfWeek() >= 6 || m_lpPublicHoliday->isPublicHoliday(date1))
 			{
 				items[z]->setData(QVariant::fromValue(true), DATA_HOLIDAY);
 				items[z]->setBackground(weekend);
@@ -168,7 +169,7 @@ void cMonthlyView::setDate(const QDate& date)
 
 		m_lpMonthlyListModel->appendRow(items);
 
-		if(date1.dayOfWeek() < 6 && !m_publicHoliday.isPublicHoliday(date1))
+		if(date1.dayOfWeek() < 6 && !m_lpPublicHoliday->isPublicHoliday(date1))
 			setBackground(date1.day(), lpBooking->code());
 	}
 	ui->m_lpMonthlyList->resizeColumnToContents(COL_DAY1);
@@ -273,6 +274,7 @@ void cMonthlyView::onTextChanged(const int day, const int field, const QString& 
 		setBackground(day, code);
 		lpBooking->setCode(code);
 		lpBooking->save();
+		recalculate(day, field);
 		break;
 	}
 	case COL_INFORMATION:
@@ -319,6 +321,7 @@ void cMonthlyView::recalculate(int day, int /*field*/)
 {
 	QStandardItem*	lpPauseItem	= m_lpMonthlyListModel->item(day-1, COL_BREAK);
 	QStandardItem*	lpIstItem	= m_lpMonthlyListModel->item(day-1, COL_IS);
+	QStandardItem*	lpSollItem	= m_lpMonthlyListModel->item(day-1, COL_SHOULD);
 	QStandardItem*	lpDecItem	= m_lpMonthlyListModel->item(day-1, COL_HOURS_DEC);
 
 	cBooking*		lpBooking	= lpPauseItem->data(DATA_BOOKING).value<cBooking*>();
@@ -326,4 +329,5 @@ void cMonthlyView::recalculate(int day, int /*field*/)
 	lpPauseItem->setText(lpBooking->pause().toString("hh:mm:ss"));
 	lpIstItem->setText(lpBooking->ist().toString("hh:mm:ss"));
 	lpDecItem->setText(QString::number(lpBooking->hoursDecimal(), 'f', 2));
+	lpSollItem->setText(lpBooking->soll().toString("hh:mm:ss"));
 }

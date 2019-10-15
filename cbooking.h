@@ -2,6 +2,7 @@
 #define CBOOKING_H
 
 
+#include "cpublicholiday.h"
 #include "cdailyworking.h"
 
 #include <QMetaType>
@@ -107,11 +108,13 @@ Q_DECLARE_METATYPE(cBooking*)
 class cBookingList : public QList<cBooking*>
 {
 public:
-	bool				load(cDailyWorkingList* m_dailyWorkingList);
+	explicit			cBookingList(cPublicHoliday* lpPublicHoliday, cDailyWorkingList* lpDailyWorkingList);
+	bool				load();
 	cBooking*			add(const QDate& date);
 	cBooking*			find(const QDate& date);
 
 private:
+	cPublicHoliday*		m_lpPublicHoliday;
 	cDailyWorkingList*	m_lpDailyWorkingList;
 };
 

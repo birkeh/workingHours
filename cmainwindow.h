@@ -4,6 +4,7 @@
 
 #include "cmonthlyview.h"
 #include "cdailyworking.h"
+#include "cpublicholiday.h"
 #include "cbooking.h"
 
 #include <QMainWindow>
@@ -28,8 +29,10 @@ private:
 	Ui::cMainWindow*	ui;
 	cMonthlyView*		m_lpMonthlyView;
 	QSqlDatabase		m_db;
+	cPublicHoliday		m_publicHoliday;
 	cDailyWorkingList	m_dailyWorkingList;
-	cBookingList		m_bookingList;
+	cBookingList*		m_lpBookingList;
+
 
 	void				initUI();
 	void				openDB();

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "cbooking.h"
 
 #include <QSqlQuery>
@@ -197,6 +198,11 @@ void cBooking::setSoll(const QTime& time)
 
 QTime cBooking::soll()
 {
+	if(code() == "G" ||
+			code() == "K" ||
+			code() == "U" ||
+			code() == "SU")
+		return(QTime(0, 0, 0));
 	return(m_soll);
 }
 
@@ -364,9 +370,14 @@ int cBooking::totalPause()
 	return(geht1().secsTo(kommt2()) + geht2().secsTo(kommt3()) + geht3().secsTo(kommt4()) + geht4().secsTo(kommt5()));
 }
 
-bool cBookingList::load(cDailyWorkingList* lpDailyWorkingList)
+cBookingList::cBookingList(cPublicHoliday* lpPublicHoliday, cDailyWorkingList* lpDailyWorkingList) :
+	m_lpPublicHoliday(lpPublicHoliday),
+	m_lpDailyWorkingList(lpDailyWorkingList)
 {
-	m_lpDailyWorkingList	= lpDailyWorkingList;
+}
+
+bool cBookingList::load()
+{
 	QSqlQuery	query;
 
 	query.prepare("SELECT   datum, "
@@ -391,9 +402,17 @@ bool cBookingList::load(cDailyWorkingList* lpDailyWorkingList)
 		return(false);
 	}
 
+	qint16	year	= 0;
+
 	while(query.next())
 	{
 		cBooking*	lpBooking	= add(query.value("datum").toDate());
+
+		if(year != lpBooking->date().year())
+		{
+			year	= static_cast<qint16>(lpBooking->date().year());
+			m_lpPublicHoliday->setYear(year);
+		}
 
 		if(lpBooking)
 		{
@@ -410,9 +429,14 @@ bool cBookingList::load(cDailyWorkingList* lpDailyWorkingList)
 			lpBooking->setCode(query.value("code").toString());
 			lpBooking->setInformation(query.value("information").toString());
 
-			cDailyWorking*	lpDailyWorking	= m_lpDailyWorkingList->get(lpBooking->date());
-			if(lpDailyWorking)
-				lpBooking->setSoll(lpDailyWorking->soll(lpBooking->date().dayOfWeek()));
+			if(!m_lpPublicHoliday->isPublicHoliday(lpBooking->date()))
+			{
+				cDailyWorking*	lpDailyWorking	= m_lpDailyWorkingList->get(lpBooking->date());
+				if(lpDailyWorking)
+					lpBooking->setSoll(lpDailyWorking->soll(static_cast<qint16>(lpBooking->date().dayOfWeek())));
+			}
+			else
+				lpBooking->setSoll(QTime(0, 0, 0));
 		}
 	}
 
