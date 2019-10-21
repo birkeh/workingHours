@@ -34,6 +34,7 @@
 #define COLOR_URLAUB		QColor(127, 127, 255)
 #define COLOR_SONDERURLAUB	QColor(127, 127, 255)
 #define COLOR_KRANK			QColor(Qt::yellow)
+#define COLOR_TRAINING		QColor(Qt::red)
 #define COLOR_WEEKEND		QColor(255, 165, 0)
 
 #endif // COMMON_H

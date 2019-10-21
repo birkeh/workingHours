@@ -112,7 +112,9 @@ public:
 	bool				load();
 	cBooking*			add(const QDate& date);
 	cBooking*			find(const QDate& date);
+	void				sort();
 
+	void				recalculate(const QDate& date = QDate());
 private:
 	cPublicHoliday*		m_lpPublicHoliday;
 	cDailyWorkingList*	m_lpDailyWorkingList;

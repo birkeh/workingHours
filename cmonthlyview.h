@@ -33,6 +33,7 @@ private:
 	QMap<QString, QString>	m_code;
 	cPublicHoliday*			m_lpPublicHoliday;
 	cBookingList*			m_lpBookingList;
+	QDate					m_date;
 
 	void					setBackground(const int day, const QString& code);
 	void					setText(QStandardItem* lpItem, const QTime& time);

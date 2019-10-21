@@ -24,7 +24,6 @@ cBooking::cBooking(const QDate& date, QObject* parent) :
 	m_information(""),
 	m_soll(QTime()),
 	m_prevDiff(0)
-
 {
 }
 
@@ -203,12 +202,18 @@ QTime cBooking::soll()
 			code() == "U" ||
 			code() == "SU")
 		return(QTime(0, 0, 0));
+
 	return(m_soll);
 }
 
 qint32 cBooking::diff()
 {
-	return(0);
+	int		i	= istSecs();
+	QTime	t	= soll();
+	int		s	= t.hour()*3600+t.minute()*60+t.second();
+	int		d	= i-s;
+
+	return(d);
 }
 
 QString cBooking::diffString()
@@ -219,13 +224,13 @@ QString cBooking::diffString()
 
 	if(d < 0)
 	{
-		t	= QTime(0, 0, 0, d*1000);
+		t	= QTime(0, 0, 0).addSecs(-d);
 		bNeg	= true;
 	}
 	else
-		t	= QTime(0, 0, 0, d*1000);
+		t	= QTime(0, 0, 0).addSecs(d);
 
-	return(bNeg ? "-" : "" + t.toString("hh:mm:ss"));
+	return((bNeg ? "-" : "") + t.toString("hh:mm:ss"));
 }
 
 void cBooking::setPrevDiff(qint32 diff)
@@ -240,7 +245,7 @@ qint32 cBooking::prevDiff()
 
 qint32 cBooking::currentDiff()
 {
-	return(0);
+	return(prevDiff()+diff());
 }
 
 QString cBooking::currentDiffString()
@@ -251,13 +256,15 @@ QString cBooking::currentDiffString()
 
 	if(d < 0)
 	{
-		t	= QTime(0, 0, 0, d*1000);
+		t	= QTime(0, 0, 0).addSecs(-d);
 		bNeg	= true;
 	}
 	else
-		t	= QTime(0, 0, 0, d*1000);
+		t	= QTime(0, 0, 0).addSecs(d);
 
-	return(bNeg ? "-" : "" + t.toString("hh:mm:ss"));
+	qint32	h		= d / 3600;
+
+	return(QString::number(h) + t.toString(":mm:ss"));
 }
 
 qreal cBooking::hoursDecimal()
@@ -440,7 +447,14 @@ bool cBookingList::load()
 		}
 	}
 
+	recalculate();
+
 	return(true);
+}
+
+bool sortAsc(cBooking* &v1, cBooking* &v2)
+{
+	return(v1->date() < v2->date());
 }
 
 cBooking* cBookingList::add(const QDate& date)
@@ -450,6 +464,7 @@ cBooking* cBookingList::add(const QDate& date)
 
 	cBooking*	lpBooking	= new cBooking(date);
 	append(lpBooking);
+
 	return(lpBooking);
 }
 
@@ -461,4 +476,43 @@ cBooking* cBookingList::find(const QDate& date)
 			return(*i);
 	}
 	return(nullptr);
+}
+
+void cBookingList::sort()
+{
+	std::sort(begin(), end(), sortAsc);
+}
+
+void cBookingList::recalculate(const QDate& date)
+{
+	sort();
+
+	bool					bFirst	= false;
+	cBookingList::iterator	i		= begin();
+
+	if(!date.isNull() && date.isValid())
+	{
+		for(;i != end(); i++)
+		{
+			if((*i)->date() >= date)
+				break;
+		}
+	}
+
+	if(i == end())
+		return;
+
+	if(i == begin())
+		bFirst	= true;
+
+	for(;i != end(); i++)
+	{
+		if(bFirst)
+		{
+			bFirst	= false;
+			(*i)->setPrevDiff(0);
+		}
+		else
+			(*i)->setPrevDiff((*(i-1))->currentDiff());
+	}
 }

@@ -356,6 +356,16 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="4">
+        <widget class="QLineEdit" name="m_lpTraining"/>
+       </item>
+       <item row="4" column="5">
+        <widget class="QLabel" name="m_lpTrainingLabel">
+         <property name="text">
+          <string>Training</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
