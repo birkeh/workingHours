@@ -29,7 +29,9 @@ SOURCES += \
         cdailyworking.cpp \
         cmonthlyitemdelegate.cpp \
         cmonthlyview.cpp \
+        common.cpp \
         cpublicholiday.cpp \
+        cvacation.cpp \
         main.cpp \
         cmainwindow.cpp
 
@@ -40,7 +42,8 @@ HEADERS += \
         cmonthlyitemdelegate.h \
         cmonthlyview.h \
         common.h \
-        cpublicholiday.h
+        cpublicholiday.h \
+        cvacation.h
 
 FORMS += \
         cmainwindow.ui \

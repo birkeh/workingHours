@@ -186,7 +186,8 @@ void cMonthlyView::setDate(const QDate& date)
 	ui->m_lpShouldLabel->setText(QString(tr("SOLL Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
 	ui->m_lpIsLabel->setText(QString(tr("IST Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
 	ui->m_lpResturlaubLabel->setText(QString(tr("Resturlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
-	ui->m_lpRestSonderurlaubLabel->setText(QString(tr("Sonderurlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
+
+	displaySummary();
 
 	m_loading	= false;
 }
@@ -349,4 +350,56 @@ void cMonthlyView::recalculate(int day, int /*field*/)
 		cBooking*		lpCurrentBooking	= lpCurrentDiffItem->data(DATA_BOOKING).value<cBooking*>();
 		lpCurrentDiffItem->setText(lpCurrentBooking->currentDiffString());
 	}
+
+	displaySummary();
+}
+
+void cMonthlyView::displaySummary()
+{
+	QStandardItem*	lpFirstItem		= m_lpMonthlyListModel->item(0, COL_DAY1);
+//	QStandardItem*	lpLastItem		= m_lpMonthlyListModel->item(m_lpMonthlyListModel->rowCount()-1, COL_DAY1);
+
+	cBooking*		lpFirstBooking	= lpFirstItem->data(DATA_BOOKING).value<cBooking*>();
+//	cBooking*		lpLastBooking	= lpLastItem->data(DATA_BOOKING).value<cBooking*>();
+
+	ui->m_lpUebertrag->setText(lpFirstBooking->prevDiffString());
+
+	qint32			soll			= 0;
+	qint32			ist				= 0;
+	qint16			g				= 0;
+	qint16			k				= 0;
+	qint16			u				= 0;
+	qint16			su				= 0;
+	qint16			t				= 0;
+	for(int i = 0;i < m_lpMonthlyListModel->rowCount();i++)
+	{
+		cBooking*	lpBooking		= m_lpMonthlyListModel->item(i, 0)->data(DATA_BOOKING).value<cBooking*>();
+
+		soll	+= lpBooking->sollSecs();
+		ist		+= lpBooking->istSecs();
+
+		if(lpBooking->code() == "G")
+			g++;
+		else if(lpBooking->code() == "K")
+			k++;
+		else if(lpBooking->code() == "U")
+			u++;
+		else if(lpBooking->code() == "SU")
+			su++;
+		else if(lpBooking->code() == "T")
+			t++;
+	}
+
+	ui->m_lpShould->setText(secs2String(soll));
+	ui->m_lpIs->setText(secs2String(ist));
+	ui->m_lpSaldo->setText(secs2String(ist-soll));
+	ui->m_lpUebertragNaechsterMonat->setText(secs2String(lpFirstBooking->prevDiff()+ist-soll));
+	ui->m_lpResturlaub->setText(QString::number(lpFirstBooking->vacation()));
+	ui->m_lpUebertragUrlaub->setText(QString::number(lpFirstBooking->vacation()-u));
+
+	ui->m_lpGleitzeit->setText(QString::number(g));
+	ui->m_lpKrank->setText(QString::number(k));
+	ui->m_lpUrlaub->setText(QString::number(u));
+	ui->m_lpSonderurlaub->setText(QString::number(su));
+	ui->m_lpTraining->setText(QString::number(t));
 }

@@ -4,6 +4,7 @@
 
 #include "cmonthlyview.h"
 #include "cdailyworking.h"
+#include "cvacation.h"
 #include "cpublicholiday.h"
 #include "cbooking.h"
 
@@ -31,6 +32,7 @@ private:
 	QSqlDatabase		m_db;
 	cPublicHoliday		m_publicHoliday;
 	cDailyWorkingList	m_dailyWorkingList;
+	cVacationList		m_vacationList;
 	cBookingList*		m_lpBookingList;
 
 

@@ -21,8 +21,9 @@ cMainWindow::cMainWindow(QWidget *parent) :
 {
 	openDB();
 	m_dailyWorkingList.load();
+	m_vacationList.load();
 
-	m_lpBookingList	= new cBookingList(&m_publicHoliday, &m_dailyWorkingList);
+	m_lpBookingList	= new cBookingList(&m_publicHoliday, &m_dailyWorkingList, &m_vacationList);
 	m_lpBookingList->load();
 
 	initUI();
@@ -148,5 +149,21 @@ void cMainWindow::openDB()
 			return;
 		}
 		qDebug() << "CREATE TABLE booking";
+	}
+
+	if(!m_db.tables().contains("vacation"))
+	{
+		query.prepare("CREATE TABLE vacation "
+					  "( "
+					  "     ab          DATE PRIMARY KEY UNIQUE, "
+					  "     days        INTEGER "
+					  ");");
+
+		if(!query.exec())
+		{
+			qDebug() << "CREATE TABLE vacation: " << query.lastError().text();
+			return;
+		}
+		qDebug() << "CREATE TABLE vacation";
 	}
 }

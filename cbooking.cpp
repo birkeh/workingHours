@@ -195,12 +195,19 @@ void cBooking::setSoll(const QTime& time)
 	m_soll	= time;
 }
 
+qint32 cBooking::sollSecs()
+{
+	QTime	t	= soll();
+	int		s	= t.hour()*3600+t.minute()*60+t.second();
+
+	return(s);
+}
+
 QTime cBooking::soll()
 {
-	if(code() == "G" ||
-			code() == "K" ||
-			code() == "U" ||
-			code() == "SU")
+	if(code() == "K" ||
+		code() == "U" ||
+		code() == "SU")
 		return(QTime(0, 0, 0));
 
 	return(m_soll);
@@ -218,19 +225,8 @@ qint32 cBooking::diff()
 
 QString cBooking::diffString()
 {
-	QTime	t;
 	qint32	d		= diff();
-	bool	bNeg	= false;
-
-	if(d < 0)
-	{
-		t	= QTime(0, 0, 0).addSecs(-d);
-		bNeg	= true;
-	}
-	else
-		t	= QTime(0, 0, 0).addSecs(d);
-
-	return((bNeg ? "-" : "") + t.toString("hh:mm:ss"));
+	return(secs2String(d));
 }
 
 void cBooking::setPrevDiff(qint32 diff)
@@ -243,6 +239,12 @@ qint32 cBooking::prevDiff()
 	return(m_prevDiff);
 }
 
+QString cBooking::prevDiffString()
+{
+	qint32	d		= prevDiff();
+	return(secs2String(d));
+}
+
 qint32 cBooking::currentDiff()
 {
 	return(prevDiff()+diff());
@@ -250,21 +252,8 @@ qint32 cBooking::currentDiff()
 
 QString cBooking::currentDiffString()
 {
-	QTime	t;
 	qint32	d		= currentDiff();
-	bool	bNeg	= false;
-
-	if(d < 0)
-	{
-		t	= QTime(0, 0, 0).addSecs(-d);
-		bNeg	= true;
-	}
-	else
-		t	= QTime(0, 0, 0).addSecs(d);
-
-	qint32	h		= d / 3600;
-
-	return(QString::number(h) + t.toString(":mm:ss"));
+	return(secs2String(d));
 }
 
 qreal cBooking::hoursDecimal()
@@ -272,6 +261,16 @@ qreal cBooking::hoursDecimal()
 	int	w	= istSecs();
 
 	return(static_cast<qreal>(w)/3600);
+}
+
+void cBooking::setVacation(qint16 vac)
+{
+	m_vacation	= vac;
+}
+
+qint16 cBooking::vacation()
+{
+	return(m_vacation);
 }
 
 bool cBooking::save()
@@ -377,9 +376,10 @@ int cBooking::totalPause()
 	return(geht1().secsTo(kommt2()) + geht2().secsTo(kommt3()) + geht3().secsTo(kommt4()) + geht4().secsTo(kommt5()));
 }
 
-cBookingList::cBookingList(cPublicHoliday* lpPublicHoliday, cDailyWorkingList* lpDailyWorkingList) :
+cBookingList::cBookingList(cPublicHoliday* lpPublicHoliday, cDailyWorkingList* lpDailyWorkingList, cVacationList* lpVacationList) :
 	m_lpPublicHoliday(lpPublicHoliday),
-	m_lpDailyWorkingList(lpDailyWorkingList)
+	m_lpDailyWorkingList(lpDailyWorkingList),
+	m_lpVacationList(lpVacationList)
 {
 }
 
@@ -487,8 +487,9 @@ void cBookingList::recalculate(const QDate& date)
 {
 	sort();
 
-	bool					bFirst	= false;
-	cBookingList::iterator	i		= begin();
+	bool					bFirst			= false;
+	cBookingList::iterator	i				= begin();
+	qint16					oldVacation	= 0;
 
 	if(!date.isNull() && date.isValid())
 	{
@@ -496,6 +497,8 @@ void cBookingList::recalculate(const QDate& date)
 		{
 			if((*i)->date() >= date)
 				break;
+
+			oldVacation	= (*i)->vacation();
 		}
 	}
 
@@ -507,6 +510,12 @@ void cBookingList::recalculate(const QDate& date)
 
 	for(;i != end(); i++)
 	{
+		cVacation*	lpVacation	= m_lpVacationList->find((*i)->date());
+		if(lpVacation)
+			(*i)->setVacation(oldVacation + lpVacation->days());
+		else
+			(*i)->setVacation(oldVacation);
+
 		if(bFirst)
 		{
 			bFirst	= false;
@@ -514,5 +523,10 @@ void cBookingList::recalculate(const QDate& date)
 		}
 		else
 			(*i)->setPrevDiff((*(i-1))->currentDiff());
+
+		oldVacation	= (*i)->vacation();
+
+		if((*i)->code() == "U")
+			oldVacation--;
 	}
 }

@@ -2,6 +2,7 @@
 #define COMMON_H
 
 
+#include <QString>
 #include <QColor>
 
 
@@ -36,5 +37,9 @@
 #define COLOR_KRANK			QColor(Qt::yellow)
 #define COLOR_TRAINING		QColor(Qt::red)
 #define COLOR_WEEKEND		QColor(255, 165, 0)
+
+
+QString		secs2String(const qint32& secs);
+
 
 #endif // COMMON_H

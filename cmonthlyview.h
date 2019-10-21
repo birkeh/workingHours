@@ -39,6 +39,7 @@ private:
 	void					setText(QStandardItem* lpItem, const QTime& time);
 
 	void					recalculate(int day, int field);
+	void					displaySummary();
 
 private slots:
 	void					onTimeChanged(const int day, const int field, const QTime& time);

@@ -4,6 +4,7 @@
 
 #include "cpublicholiday.h"
 #include "cdailyworking.h"
+#include "cvacation.h"
 
 #include <QMetaType>
 #include <QList>
@@ -66,6 +67,7 @@ public:
 	QTime				ist();
 
 	void				setSoll(const QTime& time);
+	qint32				sollSecs();
 	QTime				soll();
 
 	qint32				diff();
@@ -73,11 +75,15 @@ public:
 
 	void				setPrevDiff(qint32 diff);
 	qint32				prevDiff();
+	QString				prevDiffString();
 
 	qint32				currentDiff();
 	QString				currentDiffString();
 
 	qreal				hoursDecimal();
+
+	void				setVacation(qint16 vac);
+	qint16				vacation();
 
 	bool				save();
 private:
@@ -96,6 +102,7 @@ private:
 	QString				m_information;
 	QTime				m_soll;
 	qint32				m_prevDiff;
+	qint16				m_vacation;
 
 	void				bind(QSqlQuery& query, const QString& variable, const QTime& time);
 
@@ -108,7 +115,7 @@ Q_DECLARE_METATYPE(cBooking*)
 class cBookingList : public QList<cBooking*>
 {
 public:
-	explicit			cBookingList(cPublicHoliday* lpPublicHoliday, cDailyWorkingList* lpDailyWorkingList);
+	explicit			cBookingList(cPublicHoliday* lpPublicHoliday, cDailyWorkingList* lpDailyWorkingList, cVacationList* lpVacationList);
 	bool				load();
 	cBooking*			add(const QDate& date);
 	cBooking*			find(const QDate& date);
@@ -118,6 +125,7 @@ public:
 private:
 	cPublicHoliday*		m_lpPublicHoliday;
 	cDailyWorkingList*	m_lpDailyWorkingList;
+	cVacationList*		m_lpVacationList;
 };
 
 #endif // CBOOKING_H
