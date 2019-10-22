@@ -27,6 +27,7 @@ CONFIG += c++11
 SOURCES += \
         cbooking.cpp \
         cdailyworking.cpp \
+        cmonthlybooking.cpp \
         cmonthlyitemdelegate.cpp \
         cmonthlyview.cpp \
         common.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
         cbooking.h \
         cdailyworking.h \
         cmainwindow.h \
+        cmonthlybooking.h \
         cmonthlyitemdelegate.h \
         cmonthlyview.h \
         common.h \

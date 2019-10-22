@@ -157,6 +157,14 @@ qint32 cBooking::pauseSecs()
 	int	w	= totalWork();
 	int	p	= totalPause();
 
+	if(w > 21600 && w < 23400 && p < 1800)
+	{
+		int	p1	= w-21600;
+		p1 -= p;
+		if(p1 > 0)
+			return(p1);
+	}
+
 	if(w < 21600)
 		return(0);
 
@@ -174,15 +182,16 @@ QTime cBooking::pause()
 qint32 cBooking::istSecs()
 {
 	int	w	= totalWork();
-	int	p	= totalPause();
+	int	p	= pauseSecs();
 
-	if(w < 21600)
-		return(w);
+//	if(w < 21600)
+//		return(w);
 
-	if(p < 1800)
-		return(w - (1800-p));
+//	if(p < 1800)
+//		return(w - (1800-p));
 
-	return(w);
+//	return(w);
+	return(w-p);
 }
 
 QTime cBooking::ist()
@@ -376,7 +385,8 @@ int cBooking::totalPause()
 	return(geht1().secsTo(kommt2()) + geht2().secsTo(kommt3()) + geht3().secsTo(kommt4()) + geht4().secsTo(kommt5()));
 }
 
-cBookingList::cBookingList(cPublicHoliday* lpPublicHoliday, cDailyWorkingList* lpDailyWorkingList, cVacationList* lpVacationList) :
+cBookingList::cBookingList(cMonthlyBookingList* lpMonthlyBookingList, cPublicHoliday* lpPublicHoliday, cDailyWorkingList* lpDailyWorkingList, cVacationList* lpVacationList) :
+	m_lpMonthlyBookingList(lpMonthlyBookingList),
 	m_lpPublicHoliday(lpPublicHoliday),
 	m_lpDailyWorkingList(lpDailyWorkingList),
 	m_lpVacationList(lpVacationList)
@@ -510,11 +520,17 @@ void cBookingList::recalculate(const QDate& date)
 
 	for(;i != end(); i++)
 	{
-		cVacation*	lpVacation	= m_lpVacationList->find((*i)->date());
+		cVacation*	lpVacation					= m_lpVacationList->find((*i)->date());
 		if(lpVacation)
 			(*i)->setVacation(oldVacation + lpVacation->days());
 		else
 			(*i)->setVacation(oldVacation);
+
+		cMonthlyBooking*	lpMonthlyBooking	= m_lpMonthlyBookingList->find((*i)->date());
+		qint32				ueberstunden		= 0;
+
+		if(lpMonthlyBooking)
+			ueberstunden	= time2Secs(lpMonthlyBooking->ueberstunden());
 
 		if(bFirst)
 		{
@@ -522,7 +538,7 @@ void cBookingList::recalculate(const QDate& date)
 			(*i)->setPrevDiff(0);
 		}
 		else
-			(*i)->setPrevDiff((*(i-1))->currentDiff());
+			(*i)->setPrevDiff((*(i-1))->currentDiff()-ueberstunden);
 
 		oldVacation	= (*i)->vacation();
 

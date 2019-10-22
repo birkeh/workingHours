@@ -12,7 +12,6 @@ cVacation::cVacation(const QDate& date, QObject *parent) :
 {
 }
 
-
 QDate cVacation::date()
 {
 	return(m_date);

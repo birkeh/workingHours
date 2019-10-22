@@ -6,13 +6,15 @@
 #include <QDebug>
 
 
-cMonthlyView::cMonthlyView(const QDate& date, cPublicHoliday *lpPublicHoliday, cBookingList* lpBookingList, QWidget *parent) :
+cMonthlyView::cMonthlyView(const QDate& date, cMonthlyBookingList* lpMonthlyBookingList, cPublicHoliday *lpPublicHoliday, cBookingList* lpBookingList, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::cMonthlyView),
 	m_loading(true),
+	m_lpMonthlyBookingList(lpMonthlyBookingList),
 	m_lpPublicHoliday(lpPublicHoliday),
 	m_lpBookingList(lpBookingList),
-	m_date(date)
+	m_date(date),
+	m_lpMonthlyBooking(nullptr)
 {
 	m_code.insert(" ", tr(""));
 	m_code.insert("G", tr("Gleitzeit"));
@@ -46,6 +48,7 @@ cMonthlyView::cMonthlyView(const QDate& date, cPublicHoliday *lpPublicHoliday, c
 	connect(static_cast<cMonthlyItemDelegate*>(ui->m_lpMonthlyList->itemDelegate()),	&cMonthlyItemDelegate::textChanged,	this,	&cMonthlyView::onTextChanged);
 
 	connect(ui->m_lpMonth,																&QDateEdit::dateChanged,			this,	&cMonthlyView::onDateChanged);
+	connect(ui->m_lpUeberstunden,														&QTimeEdit::timeChanged,			this,	&cMonthlyView::onUeberstundenChanged);
 }
 
 void cMonthlyView::setDate(const QDate& date)
@@ -98,6 +101,13 @@ void cMonthlyView::setDate(const QDate& date)
 	QBrush	weekend	= QBrush(COLOR_WEEKEND);
 	QDate	date1	= date;
 	date1.setDate(date.year(), date.month(), 1);
+
+	m_lpMonthlyBooking	= m_lpMonthlyBookingList->find(date1);
+	if(!m_lpMonthlyBooking)
+	{
+		m_lpMonthlyBooking	= m_lpMonthlyBookingList->add(date1);
+		m_lpMonthlyBooking->save();
+	}
 
 	for(;date1.month() == date.month();date1 = date1.addDays(1))
 	{
@@ -186,6 +196,7 @@ void cMonthlyView::setDate(const QDate& date)
 	ui->m_lpShouldLabel->setText(QString(tr("SOLL Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
 	ui->m_lpIsLabel->setText(QString(tr("IST Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
 	ui->m_lpResturlaubLabel->setText(QString(tr("Resturlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
+	ui->m_lpUeberstunden->setTime(m_lpMonthlyBooking->ueberstunden());
 
 	displaySummary();
 
@@ -296,6 +307,14 @@ void cMonthlyView::onDateChanged(const QDate& date)
 	setDate(date);
 }
 
+void cMonthlyView::onUeberstundenChanged(const QTime& time)
+{
+	m_lpMonthlyBooking->setUeberstunden(time);
+	m_lpMonthlyBooking->save();
+
+	displaySummary();
+}
+
 void cMonthlyView::setBackground(const int day, const QString& code)
 {
 	QBrush	brush;
@@ -393,7 +412,7 @@ void cMonthlyView::displaySummary()
 	ui->m_lpShould->setText(secs2String(soll));
 	ui->m_lpIs->setText(secs2String(ist));
 	ui->m_lpSaldo->setText(secs2String(ist-soll));
-	ui->m_lpUebertragNaechsterMonat->setText(secs2String(lpFirstBooking->prevDiff()+ist-soll));
+	ui->m_lpUebertragNaechsterMonat->setText(secs2String(lpFirstBooking->prevDiff()+ist-soll-time2Secs(m_lpMonthlyBooking->ueberstunden())));
 	ui->m_lpResturlaub->setText(QString::number(lpFirstBooking->vacation()));
 	ui->m_lpUebertragUrlaub->setText(QString::number(lpFirstBooking->vacation()-u));
 

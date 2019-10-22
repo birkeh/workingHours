@@ -22,8 +22,9 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	openDB();
 	m_dailyWorkingList.load();
 	m_vacationList.load();
+	m_monthlyBookingList.load();
 
-	m_lpBookingList	= new cBookingList(&m_publicHoliday, &m_dailyWorkingList, &m_vacationList);
+	m_lpBookingList	= new cBookingList(&m_monthlyBookingList, &m_publicHoliday, &m_dailyWorkingList, &m_vacationList);
 	m_lpBookingList->load();
 
 	initUI();
@@ -75,7 +76,7 @@ void cMainWindow::initUI()
 	if(iX != -1 && iY != -1)
 		move(iX, iY);
 
-	m_lpMonthlyView	= new cMonthlyView(QDate::currentDate(), &m_publicHoliday, m_lpBookingList, this);
+	m_lpMonthlyView	= new cMonthlyView(QDate::currentDate(), &m_monthlyBookingList, &m_publicHoliday, m_lpBookingList, this);
 	ui->m_lpMainTab->addTab(m_lpMonthlyView, "Monthly");
 }
 
@@ -149,6 +150,22 @@ void cMainWindow::openDB()
 			return;
 		}
 		qDebug() << "CREATE TABLE booking";
+	}
+
+	if(!m_db.tables().contains("monthlyBooking"))
+	{
+		query.prepare("CREATE TABLE monthlyBooking "
+					  "( "
+					  "     datum        DATE PRIMARY KEY UNIQUE, "
+					  "     ueberstunden TIME "
+					  ");");
+
+		if(!query.exec())
+		{
+			qDebug() << "CREATE TABLE monthlyBooking: " << query.lastError().text();
+			return;
+		}
+		qDebug() << "CREATE TABLE monthlyBooking";
 	}
 
 	if(!m_db.tables().contains("vacation"))

@@ -6,6 +6,7 @@
 #include "cdailyworking.h"
 #include "cvacation.h"
 #include "cpublicholiday.h"
+#include "cmonthlybooking.h"
 #include "cbooking.h"
 
 #include <QMainWindow>
@@ -33,6 +34,7 @@ private:
 	cPublicHoliday		m_publicHoliday;
 	cDailyWorkingList	m_dailyWorkingList;
 	cVacationList		m_vacationList;
+	cMonthlyBookingList	m_monthlyBookingList;
 	cBookingList*		m_lpBookingList;
 
 

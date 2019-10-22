@@ -4,6 +4,7 @@
 
 #include <QString>
 #include <QColor>
+#include <QTime>
 
 
 #define COL_DAY1			0
@@ -40,6 +41,7 @@
 
 
 QString		secs2String(const qint32& secs);
+qint32		time2Secs(const QTime& time);
 
 
 #endif // COMMON_H
