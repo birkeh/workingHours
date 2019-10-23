@@ -18,14 +18,14 @@ public:
 
 	QDate				date();
 
-	void				setUeberstunden(const QTime& time);
-	QTime				ueberstunden();
+	void				setUeberstunden(qint32 ueberstunden);
+	qint32				ueberstunden();
 
 	bool				save();
 
 private:
 	QDate				m_date;
-	QTime				m_ueberstunden;
+	qint32				m_ueberstunden;
 
 signals:
 

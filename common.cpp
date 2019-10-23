@@ -5,9 +5,10 @@
 #include "common.h"
 
 #include <QTime>
+#include <QStringList>
 
 
-QString secs2String(const qint32& secs)
+QString secs2String(const qint32& secs, qint8 leading)
 {
 	QTime	t;
 	qint32	h	= secs/3600;
@@ -22,7 +23,16 @@ QString secs2String(const qint32& secs)
 	else
 		t	= QTime(0, 0, 0).addSecs(secs);
 
-	return((neg ? "-" : "") + QString::number(h) + t.toString(":mm:ss"));
+	return((neg ? "-" : "") + QString::number(h).rightJustified(leading, '0') + t.toString(":mm:ss"));
+}
+
+qint32 string2Secs(const QString& string)
+{
+	QStringList	list	= string.split(":");
+	qint32		h		= list[0].toInt();
+	qint32		m		= list[1].toInt();
+	qint32		s		= list[2].toInt();
+	return(h*3600+m*60+s);
 }
 
 qint32 time2Secs(const QTime& time)

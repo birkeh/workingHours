@@ -8,7 +8,7 @@
 cMonthlyBooking::cMonthlyBooking(const QDate& date, QObject *parent) :
 	QObject(parent),
 	m_date(date),
-	m_ueberstunden(QTime(0, 0, 0))
+	m_ueberstunden(0)
 {
 }
 
@@ -17,12 +17,12 @@ QDate cMonthlyBooking::date()
 	return(m_date);
 }
 
-void cMonthlyBooking::setUeberstunden(const QTime &time)
+void cMonthlyBooking::setUeberstunden(qint32 ueberstunden)
 {
-	m_ueberstunden	= time;
+	m_ueberstunden	= ueberstunden;
 }
 
-QTime cMonthlyBooking::ueberstunden()
+qint32 cMonthlyBooking::ueberstunden()
 {
 	return(m_ueberstunden);
 }
@@ -89,7 +89,7 @@ bool cMonthlyBookingList::load()
 
 		if(lpBooking)
 		{
-			lpBooking->setUeberstunden(query.value("ueberstunden").toTime());
+			lpBooking->setUeberstunden(query.value("ueberstunden").toInt());
 		}
 	}
 

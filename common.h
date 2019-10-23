@@ -40,7 +40,8 @@
 #define COLOR_WEEKEND		QColor(255, 165, 0)
 
 
-QString		secs2String(const qint32& secs);
+QString		secs2String(const qint32& secs, qint8 leading = 0);
+qint32		string2Secs(const QString& string);
 qint32		time2Secs(const QTime& time);
 
 

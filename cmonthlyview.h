@@ -13,6 +13,8 @@
 #include <QMap>
 #include <QTime>
 
+#include <QRegExpValidator>
+
 
 namespace Ui {
 class cMonthlyView;
@@ -37,6 +39,7 @@ private:
 	cBookingList*			m_lpBookingList;
 	QDate					m_date;
 	cMonthlyBooking*		m_lpMonthlyBooking;
+	QRegExpValidator*		m_lpValidator;
 
 	void					setBackground(const int day, const QString& code);
 	void					setText(QStandardItem* lpItem, const QTime& time);
@@ -48,7 +51,7 @@ private slots:
 	void					onTimeChanged(const int day, const int field, const QTime& time);
 	void					onTextChanged(const int day, const int field, const QString& text);
 	void					onDateChanged(const QDate& date);
-	void					onUeberstundenChanged(const QTime& time);
+	void					onUeberstundenChanged(const QString& string);
 };
 
 #endif // CMONTHLYVIEW_H
