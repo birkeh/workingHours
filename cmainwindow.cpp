@@ -1,6 +1,8 @@
 #include "cmainwindow.h"
 #include "ui_cmainwindow.h"
 
+#include "czeitnachweis.h"
+
 #include <QDate>
 #include <QDir>
 
@@ -28,6 +30,12 @@ cMainWindow::cMainWindow(QWidget *parent) :
 	m_lpBookingList->load();
 
 	initUI();
+
+	cZeitnachweis	zeitnachweis1("C:\\Users\\VET0572\\Downloads\\Zeitnachweis\\2019-09.pdf");
+	cZeitnachweis	zeitnachweis2("C:\\Users\\VET0572\\Downloads\\Zeitnachweis\\2019-08.pdf");
+	cZeitnachweis	zeitnachweis3("C:\\Users\\VET0572\\Downloads\\Zeitnachweis\\2018-07.pdf");
+	cZeitnachweis	zeitnachweis4("C:\\Users\\VET0572\\Downloads\\Zeitnachweis\\2017-06.pdf");
+	cZeitnachweis	zeitnachweis5("C:\\Users\\VET0572\\Downloads\\Zeitnachweis\\2016-05.pdf");
 
 	qDebug() << "count: " << m_lpBookingList->count();
 }
