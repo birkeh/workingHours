@@ -21,13 +21,13 @@ win32-msvc* {
 
 win32-g++ {
     message("mingw")
-    INCLUDEPATH += C:\dev\3rdParty\PoDoFo\include
-    LIBS += -LC:\dev\3rdParty\PoDoFo\lib -lpodofo.dll
+#    INCLUDEPATH += C:\dev\3rdParty\PoDoFo\include
+#    LIBS += -LC:\dev\3rdParty\PoDoFo\lib -lpodofo.dll
 }
 
 unix {
     message("*nix")
-    LIBS += -lpodofo
+#    LIBS += -lpodofo
 }
 
 # The following define makes your compiler emit warnings if you use
@@ -52,7 +52,7 @@ SOURCES += \
         common.cpp \
         cpublicholiday.cpp \
         cvacation.cpp \
-        czeitnachweis.cpp \
+#        czeitnachweis.cpp \
         main.cpp \
         cmainwindow.cpp
 
@@ -65,8 +65,8 @@ HEADERS += \
         cmonthlyview.h \
         common.h \
         cpublicholiday.h \
-        cvacation.h \
-        czeitnachweis.h
+#        czeitnachweis.h \
+        cvacation.h
 
 FORMS += \
         cmainwindow.ui \
