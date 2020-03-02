@@ -48,6 +48,8 @@ private:
 	void					displaySummary();
 
 private slots:
+	void					onPrevMonth();
+	void					onNextMonth();
 	void					onTimeChanged(const int day, const int field, const QTime& time);
 	void					onTextChanged(const int day, const int field, const QString& text);
 	void					onDateChanged(const QDate& date);

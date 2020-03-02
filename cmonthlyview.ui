@@ -17,7 +17,14 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
+       <item>
+        <widget class="QToolButton" name="m_lpPrevMonth">
+         <property name="text">
+          <string>&lt;</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QDateEdit" name="m_lpMonth">
          <property name="minimumSize">
@@ -54,6 +61,13 @@
          </property>
          <property name="calendarPopup">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_lpNextMonth">
+         <property name="text">
+          <string>&gt;</string>
          </property>
         </widget>
        </item>
@@ -112,6 +126,12 @@
        </item>
        <item row="0" column="4">
         <widget class="QLineEdit" name="m_lpGleitzeit">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
@@ -280,6 +300,12 @@
        </item>
        <item row="0" column="2">
         <widget class="QLineEdit" name="m_lpUebertrag">
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
@@ -366,7 +392,11 @@
         </widget>
        </item>
        <item row="4" column="2">
-        <widget class="QLineEdit" name="m_lpUeberstunden"/>
+        <widget class="QLineEdit" name="m_lpUeberstunden">
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

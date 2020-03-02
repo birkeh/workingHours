@@ -53,6 +53,9 @@ cMonthlyView::cMonthlyView(const QDate& date, cMonthlyBookingList* lpMonthlyBook
 	connect(static_cast<cMonthlyItemDelegate*>(ui->m_lpMonthlyList->itemDelegate()),	&cMonthlyItemDelegate::timeChanged,	this,	&cMonthlyView::onTimeChanged);
 	connect(static_cast<cMonthlyItemDelegate*>(ui->m_lpMonthlyList->itemDelegate()),	&cMonthlyItemDelegate::textChanged,	this,	&cMonthlyView::onTextChanged);
 
+	connect(ui->m_lpPrevMonth,															&QToolButton::clicked,				this,	&cMonthlyView::onPrevMonth);
+	connect(ui->m_lpNextMonth,															&QToolButton::clicked,				this,	&cMonthlyView::onNextMonth);
+
 	connect(ui->m_lpMonth,																&QDateEdit::dateChanged,			this,	&cMonthlyView::onDateChanged);
 	connect(ui->m_lpUeberstunden,														&QLineEdit::textChanged,			this,	&cMonthlyView::onUeberstundenChanged);
 }
@@ -212,6 +215,16 @@ void cMonthlyView::setDate(const QDate& date)
 cMonthlyView::~cMonthlyView()
 {
 	delete ui;
+}
+
+void cMonthlyView::onPrevMonth()
+{
+	ui->m_lpMonth->setDate(ui->m_lpMonth->date().addMonths(-1));
+}
+
+void cMonthlyView::onNextMonth()
+{
+	ui->m_lpMonth->setDate(ui->m_lpMonth->date().addMonths(1));
 }
 
 void cMonthlyView::onTimeChanged(const int day, const int field, const QTime& time)
