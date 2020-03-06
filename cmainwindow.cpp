@@ -165,7 +165,9 @@ void cMainWindow::openDB()
 		query.prepare("CREATE TABLE monthlyBooking "
 					  "( "
 					  "     datum        DATE PRIMARY KEY UNIQUE, "
-					  "     ueberstunden INTEGER "
+					  "     ueberstunden INTEGER, "
+					  "     salery       BLOB, "
+					  "     timesheet    BLOB "
 					  ");");
 
 		if(!query.exec())

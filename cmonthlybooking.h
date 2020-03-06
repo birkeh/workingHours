@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QDate>
 #include <QTime>
+#include <QByteArray>
 
 
 class cMonthlyBooking : public QObject
@@ -21,11 +22,19 @@ public:
 	void				setUeberstunden(qint32 ueberstunden);
 	qint32				ueberstunden();
 
+	void				setSalery(const QByteArray& salery);
+	QByteArray			salery();
+
+	void				setTimesheet(const QByteArray& timesheet);
+	QByteArray			timesheet();
+
 	bool				save();
 
 private:
 	QDate				m_date;
 	qint32				m_ueberstunden;
+	QByteArray			m_salery;
+	QByteArray			m_timesheet;
 
 signals:
 

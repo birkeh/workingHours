@@ -3,7 +3,12 @@
 
 #include "common.h"
 
+#include <QFileDialog>
 #include <QRegExp>
+#include <QSettings>
+#include <QMessageBox>
+#include <QDesktopServices>
+#include <QTemporaryFile>
 #include <QDebug>
 
 
@@ -58,6 +63,16 @@ cMonthlyView::cMonthlyView(const QDate& date, cMonthlyBookingList* lpMonthlyBook
 
 	connect(ui->m_lpMonth,																&QDateEdit::dateChanged,			this,	&cMonthlyView::onDateChanged);
 	connect(ui->m_lpUeberstunden,														&QLineEdit::textChanged,			this,	&cMonthlyView::onUeberstundenChanged);
+
+	connect(ui->m_lpTimesheetView,														&QPushButton::clicked,				this,	&cMonthlyView::onTimesheetView);
+	connect(ui->m_lpTimesheetDownload,													&QPushButton::clicked,				this,	&cMonthlyView::onTimesheetDownload);
+	connect(ui->m_lpTimesheetReplace,													&QPushButton::clicked,				this,	&cMonthlyView::onTimesheetReplace);
+	connect(ui->m_lpTimesheetDelete,													&QPushButton::clicked,				this,	&cMonthlyView::onTimesheetDelete);
+
+	connect(ui->m_lpSaleryView,															&QPushButton::clicked,				this,	&cMonthlyView::onSaleryView);
+	connect(ui->m_lpSaleryDownload,														&QPushButton::clicked,				this,	&cMonthlyView::onSaleryDownload);
+	connect(ui->m_lpSaleryReplace,														&QPushButton::clicked,				this,	&cMonthlyView::onSaleryReplace);
+	connect(ui->m_lpSaleryDelete,														&QPushButton::clicked,				this,	&cMonthlyView::onSaleryDelete);
 }
 
 void cMonthlyView::setDate(const QDate& date)
@@ -207,6 +222,7 @@ void cMonthlyView::setDate(const QDate& date)
 	ui->m_lpResturlaubLabel->setText(QString(tr("Resturlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
 	ui->m_lpUeberstunden->setText(secs2String(m_lpMonthlyBooking->ueberstunden(), 3));
 
+	updatePDF();
 	displaySummary();
 
 	m_loading	= false;
@@ -214,6 +230,9 @@ void cMonthlyView::setDate(const QDate& date)
 
 cMonthlyView::~cMonthlyView()
 {
+	for(int x = 0;x < m_temporaryFileList.count();x++)
+		QFile::remove(m_temporaryFileList[x]);
+
 	delete ui;
 }
 
@@ -334,6 +353,162 @@ void cMonthlyView::onUeberstundenChanged(const QString& string)
 	displaySummary();
 }
 
+void cMonthlyView::onTimesheetView()
+{
+	if(m_lpMonthlyBooking->timesheet().isEmpty())
+		return;
+
+	QTemporaryFile	file("XXXXXX.pdf");
+
+	file.setAutoRemove(false);
+
+	if(!file.open())
+		return;
+
+	file.write(m_lpMonthlyBooking->timesheet());
+	file.close();
+
+	m_temporaryFileList.append(file.fileName());
+
+	QDesktopServices::openUrl(QUrl("file:"+file.fileName()));
+}
+
+void cMonthlyView::onTimesheetDownload()
+{
+	if(m_lpMonthlyBooking->timesheet().isEmpty())
+		return;
+
+	QSettings	settings;
+	QString		path		= settings.value("timesheet/lastFolderSave", QVariant::fromValue(QDir::homePath())).toString();
+	QString		fileName	= QFileDialog::getSaveFileName(this, tr("Save Timesheet"), path, tr("PDF Files (*.pdf)"));
+
+	if(fileName.isEmpty())
+		return;
+
+	QFileInfo	fileInfo(fileName);
+	settings.setValue("timesheet/lastFolderSave", QVariant::fromValue(fileInfo.path()));
+
+	QFile		file(fileName);
+
+	if(!file.open(QIODevice::WriteOnly))
+		return;
+
+	file.write(m_lpMonthlyBooking->timesheet());
+	file.close();
+}
+
+void cMonthlyView::onTimesheetReplace()
+{
+	QSettings	settings;
+	QString		path		= settings.value("timesheet/lastFolder", QVariant::fromValue(QDir::homePath())).toString();
+	QString		fileName	= QFileDialog::getOpenFileName(this, tr("Open Timesheet"), path, tr("PDF Files (*.pdf)"));
+
+	if(fileName.isEmpty())
+		return;
+
+	QFileInfo	fileInfo(fileName);
+	settings.setValue("timesheet/lastFolder", QVariant::fromValue(fileInfo.path()));
+
+	QFile		file(fileName);
+	if(!file.open(QIODevice::ReadOnly))
+		return;
+
+	QByteArray	data		= file.readAll();
+	file.close();
+
+	m_lpMonthlyBooking->setTimesheet(data);
+	m_lpMonthlyBooking->save();
+	updatePDF();
+}
+
+void cMonthlyView::onTimesheetDelete()
+{
+	if(QMessageBox::question(this, tr("Delete Timesheet"), tr("Are you sure you want to delete the timesheet?")) == QMessageBox::No)
+		return;
+
+	m_lpMonthlyBooking->setTimesheet(QByteArray());
+	m_lpMonthlyBooking->save();
+	updatePDF();
+}
+
+void cMonthlyView::onSaleryView()
+{
+	if(m_lpMonthlyBooking->salery().isEmpty())
+		return;
+
+	QTemporaryFile	file("XXXXXX.pdf");
+
+	file.setAutoRemove(false);
+
+	if(!file.open())
+		return;
+
+	file.write(m_lpMonthlyBooking->salery());
+	file.close();
+
+	m_temporaryFileList.append(file.fileName());
+
+	QDesktopServices::openUrl(QUrl("file:"+file.fileName()));
+}
+
+void cMonthlyView::onSaleryDownload()
+{
+	if(m_lpMonthlyBooking->salery().isEmpty())
+		return;
+
+	QSettings	settings;
+	QString		path		= settings.value("salery/lastFolderSave", QVariant::fromValue(QDir::homePath())).toString();
+	QString		fileName	= QFileDialog::getSaveFileName(this, tr("Save Salery"), path, tr("PDF Files (*.pdf)"));
+
+	if(fileName.isEmpty())
+		return;
+
+	QFileInfo	fileInfo(fileName);
+	settings.setValue("salery/lastFolderSave", QVariant::fromValue(fileInfo.path()));
+
+	QFile		file(fileName);
+
+	if(!file.open(QIODevice::WriteOnly))
+		return;
+
+	file.write(m_lpMonthlyBooking->salery());
+	file.close();
+}
+
+void cMonthlyView::onSaleryReplace()
+{
+	QSettings	settings;
+	QString		path		= settings.value("salery/lastFolder", QVariant::fromValue(QDir::homePath())).toString();
+	QString		fileName	= QFileDialog::getOpenFileName(this, tr("Open Salery"), path, tr("PDF Files (*.pdf)"));
+
+	if(fileName.isEmpty())
+		return;
+
+	QFileInfo	fileInfo(fileName);
+	settings.setValue("salery/lastFolder", QVariant::fromValue(fileInfo.path()));
+
+	QFile		file(fileName);
+	if(!file.open(QIODevice::ReadOnly))
+		return;
+
+	QByteArray	data		= file.readAll();
+	file.close();
+
+	m_lpMonthlyBooking->setSalery(data);
+	m_lpMonthlyBooking->save();
+	updatePDF();
+}
+
+void cMonthlyView::onSaleryDelete()
+{
+	if(QMessageBox::question(this, tr("Delete Salery"), tr("Are you sure you want to delete the salery?")) == QMessageBox::No)
+		return;
+
+	m_lpMonthlyBooking->setSalery(QByteArray());
+	m_lpMonthlyBooking->save();
+	updatePDF();
+}
+
 void cMonthlyView::setBackground(const int day, const QString& code)
 {
 	QBrush	brush;
@@ -440,4 +615,33 @@ void cMonthlyView::displaySummary()
 	ui->m_lpUrlaub->setText(QString::number(u));
 	ui->m_lpSonderurlaub->setText(QString::number(su));
 	ui->m_lpTraining->setText(QString::number(t));
+}
+
+void cMonthlyView::updatePDF()
+{
+	if(m_lpMonthlyBooking->salery().isEmpty())
+	{
+		ui->m_lpSaleryView->setEnabled(false);
+		ui->m_lpSaleryDownload->setEnabled(false);
+		ui->m_lpSaleryDelete->setEnabled(false);
+	}
+	else
+	{
+		ui->m_lpSaleryView->setEnabled(true);
+		ui->m_lpSaleryDownload->setEnabled(true);
+		ui->m_lpSaleryDelete->setEnabled(true);
+	}
+
+	if(m_lpMonthlyBooking->timesheet().isEmpty())
+	{
+		ui->m_lpTimesheetView->setEnabled(false);
+		ui->m_lpTimesheetDownload->setEnabled(false);
+		ui->m_lpTimesheetDelete->setEnabled(false);
+	}
+	else
+	{
+		ui->m_lpTimesheetView->setEnabled(true);
+		ui->m_lpTimesheetDownload->setEnabled(true);
+		ui->m_lpTimesheetDelete->setEnabled(true);
+	}
 }

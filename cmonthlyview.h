@@ -40,12 +40,14 @@ private:
 	QDate					m_date;
 	cMonthlyBooking*		m_lpMonthlyBooking;
 	QRegExpValidator*		m_lpValidator;
+	QStringList				m_temporaryFileList;
 
 	void					setBackground(const int day, const QString& code);
 	void					setText(QStandardItem* lpItem, const QTime& time);
 
 	void					recalculate(int day, int field);
 	void					displaySummary();
+	void					updatePDF();
 
 private slots:
 	void					onPrevMonth();
@@ -54,6 +56,14 @@ private slots:
 	void					onTextChanged(const int day, const int field, const QString& text);
 	void					onDateChanged(const QDate& date);
 	void					onUeberstundenChanged(const QString& string);
+	void					onTimesheetView();
+	void					onTimesheetDownload();
+	void					onTimesheetReplace();
+	void					onTimesheetDelete();
+	void					onSaleryView();
+	void					onSaleryDownload();
+	void					onSaleryReplace();
+	void					onSaleryDelete();
 };
 
 #endif // CMONTHLYVIEW_H
