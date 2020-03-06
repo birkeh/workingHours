@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+#include "czeitnachweis.h"
+
 #include <QFileDialog>
 #include <QRegExp>
 #include <QSettings>
@@ -221,6 +223,11 @@ void cMonthlyView::setDate(const QDate& date)
 	ui->m_lpIsLabel->setText(QString(tr("IST Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
 	ui->m_lpResturlaubLabel->setText(QString(tr("Resturlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
 	ui->m_lpUeberstunden->setText(secs2String(m_lpMonthlyBooking->ueberstunden(), 3));
+
+//	if(!m_lpMonthlyBooking->timesheet().isEmpty())
+//	{
+//		cZeitnachweis	zeitnachweis(m_lpMonthlyBooking->timesheet());
+//	}
 
 	updatePDF();
 	displaySummary();

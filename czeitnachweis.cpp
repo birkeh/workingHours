@@ -1,10 +1,7 @@
 #include "czeitnachweis.h"
 
-#include <podofo/podofo.h>
 #include <QDebug>
 
-
-using namespace PoDoFo;
 
 cEntry::cEntry(entry type) :
 	m_type(type),
@@ -64,7 +61,6 @@ cEntry* cEntryList::add(cEntry::entry type)
 
 cZeitnachweis::cZeitnachweis(const QString& fileName, QObject *parent) :
 	QObject(parent),
-	m_fileName(fileName),
 	m_gedrucktAm(QDate()),
 	m_mitarbeiterNummer(""),
 	m_mitarbeiterName(""),
@@ -83,8 +79,32 @@ cZeitnachweis::cZeitnachweis(const QString& fileName, QObject *parent) :
 	m_monatssummeAnger(0),
 	m_reisezeiten(0)
 {
-	loadFile();
+	loadFile(fileName);
 }
+
+cZeitnachweis::cZeitnachweis(const QByteArray& buffer, QObject *parent) :
+	QObject(parent),
+	m_gedrucktAm(QDate()),
+	m_mitarbeiterNummer(""),
+	m_mitarbeiterName(""),
+	m_azpRegel(""),
+	m_personalbereich(""),
+	m_kostenstelle(""),
+	m_von(QDate()),
+	m_bis(QDate()),
+	m_glzSaldoVorperiode(0),
+	m_glzSaldoAktPeriode(0),
+	m_uestLtDurchrechnungsz(0),
+	m_glzSaldoGesamt(0),
+	m_resturlaubstage(0),
+	m_angeordneteUest(0),
+	m_ersatzruhe(0),
+	m_monatssummeAnger(0),
+	m_reisezeiten(0)
+{
+	loadBuffer(buffer);
+}
+
 
 void cZeitnachweis::setValues(const QDate& /*von*/, const QDate& /*bis*/, const int& day)
 {
@@ -101,20 +121,37 @@ void cZeitnachweis::setValues(const QDate& /*von*/, const QDate& /*bis*/, const 
 	lpEntry->setBis(end);
 }
 
-bool cZeitnachweis::loadFile()
+bool cZeitnachweis::loadFile(const QString &fileName)
 {
-	PdfMemDocument	pdf(m_fileName.toStdWString().c_str());
+	PdfMemDocument	pdf(fileName.toStdWString().c_str());
 	if(!pdf.IsLoaded())
 		return(false);
 
+	return(loadPDF(pdf));
+}
+
+bool cZeitnachweis::loadBuffer(const QByteArray& buffer)
+{
+	PdfMemDocument	pdf;
+
+	pdf.LoadFromBuffer(buffer.data(), buffer.length());
+
+	if(!pdf.IsLoaded())
+		return(false);
+
+	return(loadPDF(pdf));
+}
+
+bool cZeitnachweis::loadPDF(const PdfMemDocument& pdfDocument)
+{
 	qreal		xPos	= 0.0;
 	qreal		yPos	= 0.0;
 	qreal		oldYPos	= -1.0;
 	QStringList	lines;
 
-	for(int pn = 0; pn < pdf.GetPageCount();pn++)
+	for(int pn = 0; pn < pdfDocument.GetPageCount();pn++)
 	{
-		PdfPage* page = pdf.GetPage(pn);
+		PdfPage* page = pdfDocument.GetPage(pn);
 
 		PdfContentsTokenizer		tok(page);
 		const char*					token	= nullptr;

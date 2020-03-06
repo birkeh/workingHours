@@ -2,6 +2,8 @@
 #define CZEITNACHWEIS_H
 
 
+#include <podofo/podofo.h>
+
 #include <QObject>
 #include <QString>
 #include <QDate>
@@ -11,6 +13,8 @@
 
 #include <QList>
 
+
+using namespace PoDoFo;
 
 class cEntry
 {
@@ -56,12 +60,12 @@ class cZeitnachweis : public QObject
 	Q_OBJECT
 public:
 	explicit		cZeitnachweis(const QString& fileName, QObject *parent = nullptr);
+	explicit		cZeitnachweis(const QByteArray& buffer, QObject *parent = nullptr);
 
-	bool			loadFile();
+	bool			loadFile(const QString& fileName);
+	bool			loadBuffer(const QByteArray& buffer);
 
 private:
-	QString			m_fileName;
-
 	QDate			m_gedrucktAm;
 	QString			m_mitarbeiterNummer;
 	QString			m_mitarbeiterName;
@@ -81,6 +85,8 @@ private:
 	qreal			m_reisezeiten;
 
 	cEntryList		m_entryList;
+
+	bool			loadPDF(const PdfMemDocument& pdfDocument);
 
 	void			setValues(const QDate& von, const QDate& bis, const int& day);
 	void			setValues(const QDate& von, const QDate& bis, const int& day, const QTime& start, const QTime& end);
