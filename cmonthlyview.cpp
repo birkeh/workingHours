@@ -14,10 +14,11 @@
 #include <QDebug>
 
 
-cMonthlyView::cMonthlyView(const QDate& date, cMonthlyBookingList* lpMonthlyBookingList, cPublicHoliday *lpPublicHoliday, cBookingList* lpBookingList, QWidget *parent) :
+cMonthlyView::cMonthlyView(const QDate& date, const QMap<QString, QString> code, cMonthlyBookingList* lpMonthlyBookingList, cPublicHoliday *lpPublicHoliday, cBookingList* lpBookingList, QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::cMonthlyView),
 	m_loading(true),
+	m_code(code),
 	m_lpMonthlyBookingList(lpMonthlyBookingList),
 	m_lpPublicHoliday(lpPublicHoliday),
 	m_lpBookingList(lpBookingList),
@@ -25,13 +26,6 @@ cMonthlyView::cMonthlyView(const QDate& date, cMonthlyBookingList* lpMonthlyBook
 	m_lpMonthlyBooking(nullptr),
 	m_lpValidator(nullptr)
 {
-	m_code.insert(" ", tr(""));
-	m_code.insert("G", tr("Gleitzeit"));
-	m_code.insert("U", tr("Urlaub"));
-	m_code.insert("SU", tr("Sonderurlaub"));
-	m_code.insert("K", tr("Krank"));
-	m_code.insert("T", tr("Training"));
-
 	ui->setupUi(this);
 
 	QRegExp	rx("(?:\\d\\d\\d):(?:[0-5]\\d):(?:[0-5]\\d)");
@@ -80,7 +74,6 @@ cMonthlyView::cMonthlyView(const QDate& date, cMonthlyBookingList* lpMonthlyBook
 void cMonthlyView::setDate(const QDate& date)
 {
 	m_loading	= true;
-
 	m_date		= date;
 
 	m_lpPublicHoliday->setYear(static_cast<qint16>(date.year()));
@@ -224,13 +217,9 @@ void cMonthlyView::setDate(const QDate& date)
 	ui->m_lpResturlaubLabel->setText(QString(tr("Resturlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
 	ui->m_lpUeberstunden->setText(secs2String(m_lpMonthlyBooking->ueberstunden(), 3));
 
-//	if(!m_lpMonthlyBooking->timesheet().isEmpty())
-//	{
-//		cZeitnachweis	zeitnachweis(m_lpMonthlyBooking->timesheet());
-//	}
-
 	updatePDF();
 	displaySummary();
+//	emit dateChanged(date);
 
 	m_loading	= false;
 }
@@ -577,10 +566,8 @@ void cMonthlyView::recalculate(int day, int /*field*/)
 void cMonthlyView::displaySummary()
 {
 	QStandardItem*	lpFirstItem		= m_lpMonthlyListModel->item(0, COL_DAY1);
-//	QStandardItem*	lpLastItem		= m_lpMonthlyListModel->item(m_lpMonthlyListModel->rowCount()-1, COL_DAY1);
 
 	cBooking*		lpFirstBooking	= lpFirstItem->data(DATA_BOOKING).value<cBooking*>();
-//	cBooking*		lpLastBooking	= lpLastItem->data(DATA_BOOKING).value<cBooking*>();
 
 	ui->m_lpUebertrag->setText(lpFirstBooking->prevDiffString());
 
@@ -622,6 +609,8 @@ void cMonthlyView::displaySummary()
 	ui->m_lpUrlaub->setText(QString::number(u));
 	ui->m_lpSonderurlaub->setText(QString::number(su));
 	ui->m_lpTraining->setText(QString::number(t));
+
+	emit dateChanged(ui->m_lpMonth->date());
 }
 
 void cMonthlyView::updatePDF()

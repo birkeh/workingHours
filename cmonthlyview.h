@@ -25,7 +25,7 @@ class cMonthlyView : public QWidget
 	Q_OBJECT
 
 public:
-	explicit cMonthlyView(const QDate& date, cMonthlyBookingList* lpMonthlyBookingList, cPublicHoliday* lpPublicHoliday, cBookingList* lpBookingList, QWidget *parent = nullptr);
+	explicit cMonthlyView(const QDate& date, const QMap<QString, QString> code, cMonthlyBookingList* lpMonthlyBookingList, cPublicHoliday* lpPublicHoliday, cBookingList* lpBookingList, QWidget *parent = nullptr);
 	~cMonthlyView();
 
 	void					setDate(const QDate& date);
@@ -64,6 +64,9 @@ private slots:
 	void					onSaleryDownload();
 	void					onSaleryReplace();
 	void					onSaleryDelete();
+
+signals:
+	void					dateChanged(const QDate& date);
 };
 
 #endif // CMONTHLYVIEW_H

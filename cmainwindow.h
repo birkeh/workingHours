@@ -2,6 +2,7 @@
 #define CMAINWINDOW_H
 
 
+#include "cyearlyview.h"
 #include "cmonthlyview.h"
 #include "cdailyworking.h"
 #include "cvacation.h"
@@ -13,6 +14,8 @@
 #include <QCloseEvent>
 
 #include <QSqlDatabase>
+
+#include <QMap>
 
 
 namespace Ui {
@@ -28,21 +31,23 @@ public:
 	~cMainWindow();
 
 private:
-	Ui::cMainWindow*	ui;
-	cMonthlyView*		m_lpMonthlyView;
-	QSqlDatabase		m_db;
-	cPublicHoliday		m_publicHoliday;
-	cDailyWorkingList	m_dailyWorkingList;
-	cVacationList		m_vacationList;
-	cMonthlyBookingList	m_monthlyBookingList;
-	cBookingList*		m_lpBookingList;
+	Ui::cMainWindow*		ui;
+	cYearlyView*			m_lpYearyView;
+	cMonthlyView*			m_lpMonthlyView;
+	QSqlDatabase			m_db;
+	cPublicHoliday			m_publicHoliday;
+	cDailyWorkingList		m_dailyWorkingList;
+	cVacationList			m_vacationList;
+	cMonthlyBookingList		m_monthlyBookingList;
+	cBookingList*			m_lpBookingList;
+	QMap<QString, QString>	m_code;
 
 
-	void				initUI();
-	void				openDB();
+	void					initUI();
+	void					openDB();
 
 protected:
-	void				closeEvent(QCloseEvent* event);
+	void					closeEvent(QCloseEvent* event);
 };
 
 #endif // CMAINWINDOW_H

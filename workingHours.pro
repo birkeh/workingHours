@@ -52,6 +52,7 @@ SOURCES += \
         common.cpp \
         cpublicholiday.cpp \
         cvacation.cpp \
+        cyearlyview.cpp \
         czeitnachweis.cpp \
         main.cpp \
         cmainwindow.cpp
@@ -65,12 +66,14 @@ HEADERS += \
         cmonthlyview.h \
         common.h \
         cpublicholiday.h \
+        cyearlyview.h \
         czeitnachweis.h \
         cvacation.h
 
 FORMS += \
         cmainwindow.ui \
-        cmonthlyview.ui
+        cmonthlyview.ui \
+        cyearlyview.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

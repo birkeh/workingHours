@@ -18,9 +18,17 @@
 cMainWindow::cMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::cMainWindow),
+	m_lpYearyView(nullptr),
 	m_lpMonthlyView(nullptr),
 	m_lpBookingList(nullptr)
 {
+	m_code.insert(" ", tr(""));
+	m_code.insert("G", tr("Gleitzeit"));
+	m_code.insert("U", tr("Urlaub"));
+	m_code.insert("SU", tr("Sonderurlaub"));
+	m_code.insert("K", tr("Krank"));
+	m_code.insert("T", tr("Training"));
+
 	openDB();
 	m_dailyWorkingList.load();
 	m_vacationList.load();
@@ -38,6 +46,8 @@ cMainWindow::cMainWindow(QWidget *parent) :
 //	cZeitnachweis	zeitnachweis5("C:\\Users\\VET0572\\Downloads\\Zeitnachweis\\2016-05.pdf");
 
 	qDebug() << "count: " << m_lpBookingList->count();
+
+	connect(m_lpMonthlyView,	&cMonthlyView::dateChanged,	m_lpYearyView,	&cYearlyView::onDateChanged);
 }
 
 cMainWindow::~cMainWindow()
@@ -84,8 +94,13 @@ void cMainWindow::initUI()
 	if(iX != -1 && iY != -1)
 		move(iX, iY);
 
-	m_lpMonthlyView	= new cMonthlyView(QDate::currentDate(), &m_monthlyBookingList, &m_publicHoliday, m_lpBookingList, this);
+	m_lpYearyView	= new cYearlyView(QDate::currentDate(), m_code, &m_monthlyBookingList, &m_publicHoliday, m_lpBookingList, this);
+	ui->m_lpMainTab->addTab(m_lpYearyView, "Yearly");
+
+	m_lpMonthlyView	= new cMonthlyView(QDate::currentDate(), m_code, &m_monthlyBookingList, &m_publicHoliday, m_lpBookingList, this);
 	ui->m_lpMainTab->addTab(m_lpMonthlyView, "Monthly");
+
+	ui->m_lpMainTab->setCurrentWidget(m_lpMonthlyView);
 }
 
 void cMainWindow::openDB()
