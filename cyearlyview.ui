@@ -20,6 +20,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QToolButton" name="m_lpPrevYear">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>&lt;</string>
          </property>
@@ -42,6 +45,9 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
          <property name="minimumDateTime">
           <datetime>
@@ -66,6 +72,9 @@
        </item>
        <item>
         <widget class="QToolButton" name="m_lpNextYear">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>&gt;</string>
          </property>
@@ -103,6 +112,12 @@
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="1" column="0">
           <widget class="QTableView" name="m_lpYearlyList">
+           <property name="font">
+            <font>
+             <family>Segoe UI</family>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>

@@ -52,8 +52,8 @@ void cYearlyView::setDate(const QDate& date)
 	ui->m_lpYear->setDate(date);
 
 	QStringList	strings;
-	QFont		font;
-	QFont		fontBold;
+	QFont		font			= ui->m_lpYearlyList->font();
+	QFont		fontBold		= font;
 	QBrush		weekend			= QBrush(COLOR_WEEKEND);
 	QBrush		gleitzeit		= QBrush(COLOR_GLEITZEIT);
 	QBrush		urlaub			= QBrush(COLOR_URLAUB);
@@ -67,15 +67,15 @@ void cYearlyView::setDate(const QDate& date)
 	for(int x = 0;x < 31;x++)
 		strings.append(QString::number(x+1));
 
-	strings.append("SOLL Arbeitszeit");
-	strings.append("IST Arbeitszeit");
+	strings.append("SOLL");
+	strings.append("IST");
 	strings.append("+/-");
 	strings.append("Gleitzeit");
 	strings.append("Krank");
 	strings.append("Urlaub");
 	strings.append("Resturlaub");
 	strings.append("Sonderurlaub");
-	strings.append("Sonderurlaub Rest");
+//	strings.append("Sonderurlaub Rest");
 
 	ui->m_lpYearlyList->horizontalHeader()->setMinimumSectionSize(1);
 	ui->m_lpYearlyList->setMinimumWidth(1);
@@ -108,9 +108,9 @@ void cYearlyView::setDate(const QDate& date)
 	{
 		ui->m_lpYearlyList->setSpan(0, x*3+1, 1, 3);
 
-		ui->m_lpYearlyList->setColumnWidth(x*3+1, 25);
-		ui->m_lpYearlyList->setColumnWidth(x*3+2, 70);
-		ui->m_lpYearlyList->setColumnWidth(x*3+3, 20);
+		ui->m_lpYearlyList->setColumnWidth(x*3+1, 23);
+		ui->m_lpYearlyList->setColumnWidth(x*3+2, 60);
+		ui->m_lpYearlyList->setColumnWidth(x*3+3, 19);
 	}
 
 	for(int x = 0;x < strings.count();x++)
@@ -236,7 +236,7 @@ void cYearlyView::setDate(const QDate& date)
 	}
 
 	for(int x = 0;x < m_lpYearlyListModel->rowCount();x++)
-		ui->m_lpYearlyList->setRowHeight(x, 18);
+		ui->m_lpYearlyList->setRowHeight(x, 15);
 
 	ui->m_lpYearlyList->resizeColumnToContents(0);
 	ui->m_lpYearlyList->resizeColumnToContents(m_lpYearlyListModel->columnCount()-1);
