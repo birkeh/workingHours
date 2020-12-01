@@ -8,6 +8,7 @@
 cMonthlyBooking::cMonthlyBooking(const QDate& date, QObject *parent) :
 	QObject(parent),
 	m_date(date),
+	m_correction(0),
 	m_ueberstunden(0)
 {
 }
@@ -15,6 +16,16 @@ cMonthlyBooking::cMonthlyBooking(const QDate& date, QObject *parent) :
 QDate cMonthlyBooking::date()
 {
 	return(m_date);
+}
+
+void cMonthlyBooking::setCorrection(qint32 correction)
+{
+	m_correction	= correction;
+}
+
+qint32 cMonthlyBooking::correction()
+{
+	return(m_correction);
 }
 
 void cMonthlyBooking::setUeberstunden(qint32 ueberstunden)
@@ -62,13 +73,15 @@ bool cMonthlyBooking::save()
 
 	if(query.next())
 		query.prepare("UPDATE monthlyBooking "
-					  "SET    ueberstunden=:ueberstunden, "
+					  "SET    correction=:correction,"
+					  "       ueberstunden=:ueberstunden, "
 					  "       salery=:salery, "
 					  "       timesheet=:timesheet "
 					  "WHERE  datum=:datum;");
 	else
 		query.prepare("INSERT INTO monthlyBooking ( "
 					  "                     datum, "
+					  "                     correction, "
 					  "                     ueberstunden, "
 					  "                     salery, "
 					  "                     timesheet "
@@ -76,12 +89,14 @@ bool cMonthlyBooking::save()
 					  "VALUES "
 					  "                    ( "
 					  "                     :datum, "
+					  "                     :correction, "
 					  "                     :ueberstunden, "
 					  "                     :salery, "
 					  "                     :timesheet "
 					  "                    );");
 
 	query.bindValue(":datum", date());
+	query.bindValue(":correction", correction());
 	query.bindValue(":ueberstunden", ueberstunden());
 	query.bindValue(":salery", salery());
 	query.bindValue(":timesheet", timesheet());
@@ -101,6 +116,7 @@ bool cMonthlyBookingList::load()
 	QSqlQuery	query;
 
 	query.prepare("SELECT	datum, "
+				  "         correction, "
 				  "         ueberstunden, "
 				  "         salery, "
 				  "         timesheet "
@@ -119,6 +135,7 @@ bool cMonthlyBookingList::load()
 
 		if(lpBooking)
 		{
+			lpBooking->setCorrection(query.value("correction").toInt());
 			lpBooking->setUeberstunden(query.value("ueberstunden").toInt());
 			lpBooking->setSalery(query.value("salery").toByteArray());
 			lpBooking->setTimesheet(query.value("timesheet").toByteArray());

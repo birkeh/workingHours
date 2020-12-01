@@ -165,7 +165,7 @@ qint32 cBooking::pauseSecs()
 			return(p1);
 	}
 
-	if(w < 21600)
+	if(w <= 21600)
 		return(0);
 
 	if(p < 1800)
@@ -519,6 +519,7 @@ void cBookingList::recalculate(const QDate& date)
 		bFirst	= true;
 
 	qint32				ueberstunden		= 0;
+	qint32				correction			= 0;
 
 	for(;i != end(); i++)
 	{
@@ -534,14 +535,20 @@ void cBookingList::recalculate(const QDate& date)
 			(*i)->setPrevDiff(0);
 		}
 		else
-			(*i)->setPrevDiff((*(i-1))->currentDiff()-ueberstunden);
+			(*i)->setPrevDiff((*(i-1))->currentDiff()-ueberstunden+correction);
 
 		cMonthlyBooking*	lpMonthlyBooking	= m_lpMonthlyBookingList->find((*i)->date());
 
 		if(lpMonthlyBooking)
+		{
+			correction		= lpMonthlyBooking->correction();
 			ueberstunden	= lpMonthlyBooking->ueberstunden();
+		}
 		else
+		{
+			correction		= 0;
 			ueberstunden	= 0;
+		}
 
 		oldVacation	= (*i)->vacation();
 

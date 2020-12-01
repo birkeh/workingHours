@@ -40,6 +40,7 @@ private:
 	QDate					m_date;
 	cMonthlyBooking*		m_lpMonthlyBooking;
 	QRegExpValidator*		m_lpValidator;
+	QRegExpValidator*		m_lpValidatorNeg;
 	QStringList				m_temporaryFileList;
 
 	void					setBackground(const int day, const QString& code);
@@ -55,6 +56,7 @@ private slots:
 	void					onTimeChanged(const int day, const int field, const QTime& time);
 	void					onTextChanged(const int day, const int field, const QString& text);
 	void					onDateChanged(const QDate& date);
+	void					onCorrectionChanged(const QString& string);
 	void					onUeberstundenChanged(const QString& string);
 	void					onTimesheetView();
 	void					onTimesheetDownload();

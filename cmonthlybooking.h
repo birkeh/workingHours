@@ -19,6 +19,9 @@ public:
 
 	QDate				date();
 
+	void				setCorrection(qint32 correction);
+	qint32				correction();
+
 	void				setUeberstunden(qint32 ueberstunden);
 	qint32				ueberstunden();
 
@@ -32,6 +35,7 @@ public:
 
 private:
 	QDate				m_date;
+	qint32				m_correction;
 	qint32				m_ueberstunden;
 	QByteArray			m_salery;
 	QByteArray			m_timesheet;

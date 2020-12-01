@@ -28,11 +28,18 @@ QString secs2String(const qint32& secs, qint8 leading)
 
 qint32 string2Secs(const QString& string)
 {
+	qint32		secs;
 	QStringList	list	= string.split(":");
 	qint32		h		= list[0].toInt();
 	qint32		m		= list[1].toInt();
 	qint32		s		= list[2].toInt();
-	return(h*3600+m*60+s);
+
+	secs	= h*3600+m*60+s;
+
+	if(string[0] == "-")
+		secs	= -secs;
+
+	return(secs);
 }
 
 qint32 time2Secs(const QTime& time)

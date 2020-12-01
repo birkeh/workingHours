@@ -28,8 +28,11 @@ cMonthlyView::cMonthlyView(const QDate& date, const QMap<QString, QString> code,
 {
 	ui->setupUi(this);
 
+	QRegExp	rxNeg("-?(?:\\d\\d\\d):(?:[0-5]\\d):(?:[0-5]\\d)");
 	QRegExp	rx("(?:\\d\\d\\d):(?:[0-5]\\d):(?:[0-5]\\d)");
 	m_lpValidator			= new QRegExpValidator(rx, this);
+	m_lpValidatorNeg		= new QRegExpValidator(rxNeg, this);
+	ui->m_lpCorrection->setValidator(m_lpValidatorNeg);
 	ui->m_lpUeberstunden->setValidator(m_lpValidator);
 
 	m_lpMonthlyListModel	= new QStandardItemModel(0, 1);
@@ -58,6 +61,7 @@ cMonthlyView::cMonthlyView(const QDate& date, const QMap<QString, QString> code,
 	connect(ui->m_lpNextMonth,															&QToolButton::clicked,				this,	&cMonthlyView::onNextMonth);
 
 	connect(ui->m_lpMonth,																&QDateEdit::dateChanged,			this,	&cMonthlyView::onDateChanged);
+	connect(ui->m_lpCorrection,															&QLineEdit::textChanged,			this,	&cMonthlyView::onCorrectionChanged);
 	connect(ui->m_lpUeberstunden,														&QLineEdit::textChanged,			this,	&cMonthlyView::onUeberstundenChanged);
 
 	connect(ui->m_lpTimesheetView,														&QPushButton::clicked,				this,	&cMonthlyView::onTimesheetView);
@@ -215,6 +219,7 @@ void cMonthlyView::setDate(const QDate& date)
 	ui->m_lpShouldLabel->setText(QString(tr("SOLL Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
 	ui->m_lpIsLabel->setText(QString(tr("IST Arbeitszeit (%1):")).arg(date.toString("MMMM yyyy")));
 	ui->m_lpResturlaubLabel->setText(QString(tr("Resturlaub %1:")).arg(date.addMonths(-1).toString("MMMM yyyy")));
+	ui->m_lpCorrection->setText(secs2String(m_lpMonthlyBooking->correction(), 3));
 	ui->m_lpUeberstunden->setText(secs2String(m_lpMonthlyBooking->ueberstunden(), 3));
 
 	updatePDF();
@@ -341,10 +346,22 @@ void cMonthlyView::onDateChanged(const QDate& date)
 	setDate(date);
 }
 
+void cMonthlyView::onCorrectionChanged(const QString& string)
+{
+	m_lpMonthlyBooking->setCorrection(string2Secs(string));
+	m_lpMonthlyBooking->save();
+
+	m_lpBookingList->recalculate();
+
+	displaySummary();
+}
+
 void cMonthlyView::onUeberstundenChanged(const QString& string)
 {
 	m_lpMonthlyBooking->setUeberstunden(string2Secs(string));
 	m_lpMonthlyBooking->save();
+
+	m_lpBookingList->recalculate();
 
 	displaySummary();
 }
@@ -600,7 +617,7 @@ void cMonthlyView::displaySummary()
 	ui->m_lpShould->setText(secs2String(soll));
 	ui->m_lpIs->setText(secs2String(ist));
 	ui->m_lpSaldo->setText(secs2String(ist-soll));
-	ui->m_lpUebertragNaechsterMonat->setText(secs2String(lpFirstBooking->prevDiff()+ist-soll-m_lpMonthlyBooking->ueberstunden()));
+	ui->m_lpUebertragNaechsterMonat->setText(secs2String(lpFirstBooking->prevDiff()+ist-soll-m_lpMonthlyBooking->ueberstunden()+m_lpMonthlyBooking->correction()));
 	ui->m_lpResturlaub->setText(QString::number(lpFirstBooking->vacation()));
 	ui->m_lpUebertragUrlaub->setText(QString::number(lpFirstBooking->vacation()-u));
 

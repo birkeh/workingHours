@@ -180,6 +180,7 @@ void cMainWindow::openDB()
 		query.prepare("CREATE TABLE monthlyBooking "
 					  "( "
 					  "     datum        DATE PRIMARY KEY UNIQUE, "
+					  "     correction   INTEGER, "
 					  "     ueberstunden INTEGER, "
 					  "     salery       BLOB, "
 					  "     timesheet    BLOB "
