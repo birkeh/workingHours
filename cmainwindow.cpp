@@ -14,6 +14,8 @@
 #include <QMessageBox>
 #include <QDebug>
 
+#include <QFileDialog>
+
 
 cMainWindow::cMainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -101,6 +103,9 @@ void cMainWindow::initUI()
 	ui->m_lpMainTab->addTab(m_lpMonthlyView, "Monthly");
 
 	ui->m_lpMainTab->setCurrentWidget(m_lpMonthlyView);
+
+	connect(ui->m_exportTimesheet,	&QAction::triggered,	this,	&cMainWindow::onExportTimesheet);
+	connect(ui->m_exportSalery,		&QAction::triggered,	this,	&cMainWindow::onExportSalery);
 }
 
 void cMainWindow::openDB()
@@ -208,5 +213,73 @@ void cMainWindow::openDB()
 			return;
 		}
 		qDebug() << "CREATE TABLE vacation";
+	}
+}
+
+void cMainWindow::onExportTimesheet()
+{
+	if(!m_monthlyBookingList.count())
+		return;
+
+	QSettings	settings;
+	QString		path		= settings.value("timesheet/lastExportFolder", QVariant::fromValue(QDir::homePath())).toString();
+	QString		directory	= QFileDialog::getExistingDirectory(this, tr("Export Timesheet"), path);
+
+	if(directory.isEmpty())
+		return;
+
+	settings.setValue("timesheet/lastExportFolder", QVariant::fromValue(directory));
+
+	for(int x = 0;x < m_monthlyBookingList.count();x++)
+	{
+		cMonthlyBooking*	monthlyBooking	= m_monthlyBookingList[x];
+		if(!monthlyBooking)
+			continue;
+
+		if(monthlyBooking->timesheet().isEmpty())
+			continue;
+
+		QString	fileName	= directory + QDir::separator() + monthlyBooking->date().toString("yyyy-MM") + ".pdf";
+		QFile	file(fileName);
+
+		if(!file.open(QIODevice::WriteOnly))
+			return;
+
+		file.write(monthlyBooking->timesheet());
+		file.close();
+	}
+}
+
+void cMainWindow::onExportSalery()
+{
+	if(!m_monthlyBookingList.count())
+		return;
+
+	QSettings	settings;
+	QString		path		= settings.value("salery/lastExportFolder", QVariant::fromValue(QDir::homePath())).toString();
+	QString		directory	= QFileDialog::getExistingDirectory(this, tr("Export Salery"), path);
+
+	if(directory.isEmpty())
+		return;
+
+	settings.setValue("salery/lastExportFolder", QVariant::fromValue(directory));
+
+	for(int x = 0;x < m_monthlyBookingList.count();x++)
+	{
+		cMonthlyBooking*	monthlyBooking	= m_monthlyBookingList[x];
+		if(!monthlyBooking)
+			continue;
+
+		if(monthlyBooking->salery().isEmpty())
+			continue;
+
+		QString	fileName	= directory + QDir::separator() + monthlyBooking->date().toString("yyyy-MM") + ".pdf";
+		QFile	file(fileName);
+
+		if(!file.open(QIODevice::WriteOnly))
+			return;
+
+		file.write(monthlyBooking->salery());
+		file.close();
 	}
 }

@@ -48,6 +48,9 @@ private:
 
 protected:
 	void					closeEvent(QCloseEvent* event);
+private slots:
+	void					onExportTimesheet();
+	void					onExportSalery();
 };
 
 #endif // CMAINWINDOW_H

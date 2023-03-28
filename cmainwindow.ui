@@ -29,6 +29,20 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="menu_Export">
+     <property name="title">
+      <string>&amp;Export</string>
+     </property>
+     <addaction name="m_exportTimesheet"/>
+     <addaction name="m_exportSalery"/>
+    </widget>
+    <addaction name="menu_Export"/>
+   </widget>
+   <addaction name="menu_File"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -39,6 +53,16 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="m_exportSalery">
+   <property name="text">
+    <string>&amp;Salery...</string>
+   </property>
+  </action>
+  <action name="m_exportTimesheet">
+   <property name="text">
+    <string>&amp;Timesheet...</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
